@@ -13,8 +13,8 @@
     "@types/node": "^20.16.13"
   },
   "dependencies": {
+    "@types/node": "^20.16.13",
     "etna-eslint": "github:etna-alternance/ETNA-Linter",
-    "readline-sync": "^1.4.10",
-    "@types/node": "^20.16.13"
+    "readline-sync": "^1.4.10"
   }
 }

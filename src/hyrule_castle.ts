@@ -3,14 +3,16 @@ import { Monster } from './class/Monster';
 
 const rl = require('readline-sync');
 
-function displayHP(char: Hero | Monster) {
+type Char = Hero | Monster
+
+function displayHP(char: Char) {
   const HPArray: string[] = Array(char.HPMax).fill('I');
   HPArray.forEach((hp, i) => {
     if (char.HPMax !== char.HP && i + 1 > char.HP) {
       HPArray[i] = '.';
     }
   });
-  console.log(`${char.name}'s HP: [${HPArray.join('')}] ${char.HP}/${char.HPMax}`);
+  console.log(`${char instanceof Hero ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${HPArray.join('')}] ${char.HP}/${char.HPMax}\u001b[37m`);
 }
 
 function fight(player: Hero, monster: Monster) {
@@ -40,6 +42,7 @@ function fight(player: Hero, monster: Monster) {
 }
 
 function game(player: Hero, mobs: Monster[], boss: Monster) {
+  console.log('Tamer');
   console.log('You enter Hyrule Castle');
   for (let i = 0; i < mobs.length; i += 1) {
     console.log(`You are in floor ${i + 1}`);
