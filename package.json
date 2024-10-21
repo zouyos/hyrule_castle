@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@types/node": "^20.16.13",
+    "axios": "^1.7.7",
     "etna-eslint": "github:etna-alternance/ETNA-Linter",
     "readline-sync": "^1.4.10"
   }

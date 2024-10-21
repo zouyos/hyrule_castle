@@ -1,65 +1,108 @@
-import { Hero } from './class/Hero';
-import { Monster } from './class/Monster';
+import * as playersFromJson from '../data/players.json'
+import * as enemiesFromJson from '../data/enemies.json'
+import * as bossesFromJson from '../data/bosses.json'
 
 const rl = require('readline-sync');
 
-type Char = Hero | Monster
-
-function displayHP(char: Char) {
-  const HPArray: string[] = Array(char.HPMax).fill('I');
-  HPArray.forEach((hp, i) => {
-    if (char.HPMax !== char.HP && i + 1 > char.HP) {
-      HPArray[i] = '.';
-    }
-  });
-  console.log(`${char instanceof Hero ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${HPArray.join('')}] ${char.HP}/${char.HPMax}\u001b[37m`);
+type Char = {
+  name: string,
+  hp: number,
+  hpMax: number,
+  mp: number,
+  str: number,
+  int: number,
+  def: number,
+  res: number,
+  spd: number,
+  luck: number,
+  race: number,
+  class: number,
+  rarity: number,
+  isPlayer: boolean
 }
 
-function fight(player: Hero, monster: Monster) {
-  console.log(`You encounter ${monster.name}, prepare to fight!`);
-  while (!(monster.HP === 0 || player.HP === 0)) {
-    displayHP(player);
-    displayHP(monster);
-    const move = rl.question('---- Options: 1.Attack 2.Heal ----\n');
-    if (move === '1') {
-      player.attack(monster);
-      displayHP(monster);
-    } else if (move === '2') {
-      player.heal();
-      displayHP(player);
+const players: Char[] = [...playersFromJson].map((player) => ({
+  ...player,
+  isPlayer: true,
+  hpMax: player.hp
+}));
+
+const enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
+  ...enemy,
+  isPlayer: false,
+  hpMax: enemy.hp
+}));
+
+const bosses: Char[] = [...bossesFromJson].map((boss) => ({
+  ...boss,
+  isPlayer: false,
+  hpMax: boss.hp
+}));
+
+function displayHp(char: Char) {
+  const hpArray: string[] = Array(char.hpMax).fill('I');
+  hpArray.forEach((hp, i) => {
+    if (char.hpMax !== char.hp && i + 1 > char.hp) {
+      hpArray[i] = '.';
     }
-    if (monster.HP !== 0) {
-      monster.attack(player);
+  });
+  console.log(`${char.isPlayer ? '\u001b[32m' : '\u001b[31m'}${char.name}'s hp: [${hpArray.join('')}] ${char.hp >= 0 ? char.hp : '0'}/${char.hpMax}\u001b[37m`);
+}
+
+function fight(player: Char, enemy: Char) {
+  console.log(`You encounter ${enemy.name}, prepare to fight!`);
+  while (!(enemy.hp <= 0 || player.hp <= 0)) {
+    displayHp(player);
+    displayHp(enemy);
+    const move = rl.question('--- Options:  1.Attack  2.Heal  ---\n');
+    if (move === '1') {
+      enemy.hp -= player.str
+      console.log(`You attack ${enemy.name}!`);
+      console.log(`${enemy.name} loses ${player.str} HP.`);
+    } else if (move === '2') {
+      if (player.hp + Math.ceil(player.hpMax / 2) <= player.hpMax) {
+        console.log(`You recover ${Math.ceil(player.hpMax / 2)} HP`);
+        player.hp += Math.ceil(player.hpMax / 2)
+      } else {
+        console.log(`You recover ${player.hpMax - player.hp} HP`);
+        player.hp = player.hpMax
+      }
+    }
+    if (enemy.hp !== 0) {
+      console.log(`${enemy.name} attacks!`);
+      player.hp -= enemy.str
+      console.log(`You lose ${enemy.str} HP.`);
     }
   }
-  if (monster.HP === 0) {
-    displayHP(monster);
-    console.log(`${monster.name} defeated!`);
-  } else {
+  if (enemy.hp <= 0) {
+    displayHp(enemy);
+    console.log(`${enemy.name} defeated!`);
+  }
+  if (player.hp <= 0) {
+    displayHp(player);
     console.log('GAME OVER');
     process.exit();
   }
 }
 
-function game(player: Hero, mobs: Monster[], boss: Monster) {
-  console.log('Tamer');
+function game(player: Char, enemies: Char[], boss: Char) {
   console.log('You enter Hyrule Castle');
-  for (let i = 0; i < mobs.length; i += 1) {
+  for (let i = 0; i < enemies.length; i += 1) {
     console.log(`You are in floor ${i + 1}`);
-    fight(player, mobs[i]);
+    fight(player, enemies[i]);
   }
   console.log('You are in floor 10, Ganon\'s room');
   fight(player, boss);
   console.log('Congratulations, you saved Hyrule from Evil');
 }
 
-const Link = new Hero('Link', 60, 60, 15);
+const link = players[0]
 
-const mobs: Monster[] = [];
+const enemiesArr: Char[] = [];
 for (let i = 0; i < 9; i += 1) {
-  mobs.push(new Monster(`Bokoblin ${i + 1}`, 30, 30, 5));
+  enemiesArr.push({ ...enemies[11], name: `${enemies[11].name} ${i + 1}` });
 }
 
-const Ganon = new Monster('Ganon', 150, 150, 20);
+const ganon = bosses[0];
 
-game(Link, mobs, Ganon);
+game(link, enemiesArr, ganon);
