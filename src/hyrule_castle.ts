@@ -41,14 +41,13 @@ function fight(player: Hero, monster: Monster) {
 
 function game(player: Hero, mobs: Monster[], boss: Monster) {
   console.log('You enter Hyrule Castle');
-  // mob fights
   for (let i = 0; i < mobs.length; i += 1) {
     console.log(`You are in floor ${i + 1}`);
     fight(player, mobs[i]);
   }
   console.log('You are in floor 10, Ganon\'s room');
   fight(player, boss);
-  console.log('Congratulations, you save Hyrule from Evil');
+  console.log('Congratulations, you saved Hyrule from Evil');
 }
 
 const Link = new Hero('Link', 60, 60, 15);
