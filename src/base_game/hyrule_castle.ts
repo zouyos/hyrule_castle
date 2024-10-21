@@ -12,12 +12,12 @@ function displayHP(char: Char) {
       HPArray[i] = '.';
     }
   });
-  console.log(`${char instanceof Hero ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${HPArray.join('')}] ${char.HP}/${char.HPMax}\u001b[37m`);
+  console.log(`${char instanceof Hero ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${HPArray.join('')}] ${char.HP >= 0 ? char.HP : '0'}/${char.HPMax}\u001b[37m`);
 }
 
 function fight(player: Hero, monster: Monster) {
   console.log(`You encounter ${monster.name}, prepare to fight!`);
-  while (!(monster.HP === 0 || player.HP === 0)) {
+  while (!(monster.HP <= 0 || player.HP <= 0)) {
     displayHP(player);
     displayHP(monster);
     const move = rl.question('---- Options: 1.Attack 2.Heal ----\n');
@@ -32,17 +32,18 @@ function fight(player: Hero, monster: Monster) {
       monster.attack(player);
     }
   }
-  if (monster.HP === 0) {
+  if (monster.HP <= 0) {
     displayHP(monster);
     console.log(`${monster.name} defeated!`);
-  } else {
+  }
+  if (player.HP <= 0) {
+    displayHP(player);
     console.log('GAME OVER');
     process.exit();
   }
 }
 
 function game(player: Hero, mobs: Monster[], boss: Monster) {
-  console.log('Tamer');
   console.log('You enter Hyrule Castle');
   for (let i = 0; i < mobs.length; i += 1) {
     console.log(`You are in floor ${i + 1}`);

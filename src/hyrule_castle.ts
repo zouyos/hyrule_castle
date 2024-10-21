@@ -104,7 +104,7 @@ const link = players[0];
 
 const enemiesArr: Char[] = [];
 for (let i = 0; i < 9; i += 1) {
-  enemiesArr.push({ ...enemies[11], name: `${enemies[11].name} ${i + 1}` });
+  enemiesArr.push({ ...enemies[11], name: `${enemies[11].name}` });
 }
 
 const ganon = bosses[0];
