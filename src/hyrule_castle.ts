@@ -1,6 +1,6 @@
-import * as playersFromJson from '../data/players.json'
-import * as enemiesFromJson from '../data/enemies.json'
-import * as bossesFromJson from '../data/bosses.json'
+import * as playersFromJson from '../data/players.json';
+import * as enemiesFromJson from '../data/enemies.json';
+import * as bossesFromJson from '../data/bosses.json';
 
 const rl = require('readline-sync');
 
@@ -18,25 +18,29 @@ type Char = {
   race: number,
   class: number,
   rarity: number,
-  isPlayer: boolean
-}
+  isPlayer: boolean,
+  isBoss: boolean
+};
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,
   isPlayer: true,
-  hpMax: player.hp
+  isBoss: false,
+  hpMax: player.hp,
 }));
 
 const enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
   ...enemy,
   isPlayer: false,
-  hpMax: enemy.hp
+  isBoss: false,
+  hpMax: enemy.hp,
 }));
 
 const bosses: Char[] = [...bossesFromJson].map((boss) => ({
   ...boss,
   isPlayer: false,
-  hpMax: boss.hp
+  isBoss: true,
+  hpMax: boss.hp,
 }));
 
 function displayHp(char: Char) {
@@ -50,27 +54,27 @@ function displayHp(char: Char) {
 }
 
 function fight(player: Char, enemy: Char) {
-  console.log(`You encounter ${enemy.name}, prepare to fight!`);
+  console.log(`You encounter ${enemy.isBoss ? enemy.name : `a ${enemy.name}`}, prepare to fight!`);
   while (!(enemy.hp <= 0 || player.hp <= 0)) {
     displayHp(player);
     displayHp(enemy);
     const move = rl.question('--- Options:  1.Attack  2.Heal  ---\n');
     if (move === '1') {
-      enemy.hp -= player.str
+      enemy.hp -= player.str;
       console.log(`You attack ${enemy.name}!`);
       console.log(`${enemy.name} loses ${player.str} HP.`);
     } else if (move === '2') {
       if (player.hp + Math.ceil(player.hpMax / 2) <= player.hpMax) {
         console.log(`You recover ${Math.ceil(player.hpMax / 2)} HP`);
-        player.hp += Math.ceil(player.hpMax / 2)
+        player.hp += Math.ceil(player.hpMax / 2);
       } else {
         console.log(`You recover ${player.hpMax - player.hp} HP`);
-        player.hp = player.hpMax
+        player.hp = player.hpMax;
       }
     }
     if (enemy.hp !== 0) {
       console.log(`${enemy.name} attacks!`);
-      player.hp -= enemy.str
+      player.hp -= enemy.str;
       console.log(`You lose ${enemy.str} HP.`);
     }
   }
@@ -96,7 +100,7 @@ function game(player: Char, enemies: Char[], boss: Char) {
   console.log('Congratulations, you saved Hyrule from Evil');
 }
 
-const link = players[0]
+const link = players[0];
 
 const enemiesArr: Char[] = [];
 for (let i = 0; i < 9; i += 1) {
