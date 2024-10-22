@@ -50,54 +50,54 @@ function displayHp(char: Char) {
       hpArray[i] = '.';
     }
   });
-  console.log(`${char.isPlayer ? '\u001b[32m' : '\u001b[31m'}${char.name}'s hp: [${hpArray.join('')}] ${char.hp >= 0 ? char.hp : '0'}/${char.hpMax}\u001b[37m`);
+  console.log(`${char.isPlayer ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${hpArray.join('')}] ${char.hp >= 0 ? char.hp : '0'}/${char.hpMax}\u001b[37m\n`);
 }
 
 function fight(player: Char, enemy: Char) {
-  console.log(`You encounter ${enemy.isBoss ? enemy.name : `a ${enemy.name}`}, prepare to fight!`);
+  console.log(`You encounter ${enemy.isBoss ? enemy.name : enemy.name === 'Octorock' ? `an \u001b[31m${enemy.name}u001b[37m` : `a \u001b[31m${enemy.name}\u001b[37m`}, prepare to fight!\n`);
   while (!(enemy.hp <= 0 || player.hp <= 0)) {
     displayHp(player);
     displayHp(enemy);
-    const move = rl.question('--- Options:  1.Attack  2.Heal  ---\n');
+    const move = rl.question('==== Options:  1.Attack  2.Heal  ====\n\n');
     if (move === '1') {
       enemy.hp -= player.str;
-      console.log(`You attack ${enemy.name}!`);
-      console.log(`${enemy.name} loses ${player.str} HP.`);
+      console.log(`\nYou attack \u001b[31m'${enemy.name}\u001b[37m!\n`);
+      console.log(`${enemy.name} loses ${player.str} HP.\n`);
     } else if (move === '2') {
       if (player.hp + Math.ceil(player.hpMax / 2) <= player.hpMax) {
-        console.log(`\u001b[34mYou recover ${Math.ceil(player.hpMax / 2)} HP.\u001b[37m`);
+        console.log(`\n\u001b[34mYou recover ${Math.ceil(player.hpMax / 2)} HP.\u001b[37m\n`);
         player.hp += Math.ceil(player.hpMax / 2);
       } else {
-        console.log(`\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m`);
+        console.log(`\n\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
         player.hp = player.hpMax;
       }
     }
     if (enemy.hp !== 0) {
-      console.log(`${enemy.name} attacks!`);
+      console.log(`${enemy.name} attacks!\n`);
       player.hp -= enemy.str;
-      console.log(`You lose ${enemy.str} HP.`);
+      console.log(`You lose ${enemy.str} HP.\n`);
     }
   }
   if (enemy.hp <= 0) {
     displayHp(enemy);
-    console.log(`${enemy.name} DEFEATED!`);
+    console.log(`${enemy.name} DEFEATED!\n`);
   }
   if (player.hp <= 0) {
     displayHp(player);
-    console.log('GAME OVER');
+    console.log('GAME OVER\n');
     process.exit();
   }
 }
 
 function game(player: Char, enemies: Char[], boss: Char) {
-  console.log('You enter Hyrule Castle');
+  console.log('\n\u001b[37m==== You enter Hyrule Castle ====\n');
   for (let i = 0; i < enemies.length; i += 1) {
-    console.log(`\u001b[33mFLOOR ${i + 1}\u001b[37m`);
+    console.log(`\u001b[33mFLOOR ${i + 1}\u001b[37m\n`);
     fight(player, enemies[i]);
   }
-  console.log('\u001b[35mBOSS FLOOR\u001b[37m');
+  console.log('\u001b[35mBOSS FLOOR\u001b[37m\n');
   fight(player, boss);
-  console.log('Congratulations, you saved Hyrule from Evil');
+  console.log('Congratulations, you saved Hyrule from Evil\n');
 }
 
 function pickChar(chars: Char[]) {
