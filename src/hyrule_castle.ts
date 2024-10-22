@@ -54,7 +54,7 @@ function displayHp(char: Char) {
 }
 
 function fight(player: Char, enemy: Char) {
-  console.log(`You encounter ${enemy.isBoss ? enemy.name : enemy.name === 'Octorock' ? `an \u001b[31m${enemy.name}u001b[37m` : `a \u001b[31m${enemy.name}\u001b[37m`}, prepare to fight!\n`);
+  console.log(`You encounter ${enemy.isBoss ? enemy.name : `a \u001b[31m${enemy.name}\u001b[37m`}, prepare to fight!\n`);
   while (!(enemy.hp <= 0 || player.hp <= 0)) {
     displayHp(player);
     displayHp(enemy);
@@ -89,34 +89,40 @@ function fight(player: Char, enemy: Char) {
   }
 }
 
-function game(player: Char, enemies: Char[], boss: Char) {
+function game(player: Char, monsters: Char[], boss: Char) {
   console.log('\n\u001b[37m==== You enter Hyrule Castle ====\n');
-  for (let i = 0; i < enemies.length; i += 1) {
-    console.log(`\u001b[33mFLOOR ${i + 1}\u001b[37m\n`);
-    fight(player, enemies[i]);
+  for (let i = 0; i < monsters.length; i += 1) {
+    console.log(`\u001b[33m==== FLOOR ${i + 1} ====\u001b[37m\n`);
+    fight(player, monsters[i]);
   }
-  console.log('\u001b[35mBOSS FLOOR\u001b[37m\n');
+  console.log('\u001b[35m==== BOSS FLOOR ====\u001b[37m\n');
   fight(player, boss);
   console.log('Congratulations, you saved Hyrule from Evil\n');
 }
 
 function pickChar(chars: Char[]) {
-  const rarities = [{ idx: 1, pct: 50 }, { idx: 2, pct: 30 }, { idx: 3, pct: 15 }, { idx: 4, pct: 4 }, { idx: 5, pct: 1 }]
+  const rarities = [
+    { idx: 1, pct: 50 },
+    { idx: 2, pct: 30 },
+    { idx: 3, pct: 15 },
+    { idx: 4, pct: 4 },
+    { idx: 5, pct: 1 },
+  ];
   const randomNumber = Math.floor(Math.random() * 100) + 1;
 
-  let result: number | undefined = undefined, acc = 0;
+  let result: number | undefined;
+  let acc = 0;
 
-  rarities.forEach(rarity => {
-    if (result === undefined && randomNumber > 100 - rarity.pct - acc)
-      result = rarity.idx;
+  rarities.forEach((rarity) => {
+    if (result === undefined && randomNumber > 100 - rarity.pct - acc) result = rarity.idx;
     acc += rarity.pct;
   });
 
-  const pickableChars: Char[] = []
+  const pickableChars: Char[] = [];
 
   for (const char of chars) {
     if (char.rarity === result) {
-      pickableChars.push({ ...char })
+      pickableChars.push({ ...char });
     }
   }
 
@@ -124,17 +130,17 @@ function pickChar(chars: Char[]) {
 }
 
 function pickChars(arr: Char[]) {
-  const pickedChars: Char[] = []
+  const pickedChars: Char[] = [];
   for (let i = 0; i < 9; i += 1) {
-    pickedChars.push(pickChar(arr))
+    pickedChars.push(pickChar(arr));
   }
-  return pickedChars
+  return pickedChars;
 }
 
 const player = pickChar(players);
 
-const monsters = pickChars(enemies)
+const monsters = pickChars(enemies);
 
-const boss = pickChar(bosses)
+const boss = pickChar(bosses);
 
 game(player, monsters, boss);
