@@ -19,7 +19,7 @@ type Char = {
   class: number,
   rarity: number,
   isPlayer: boolean,
-  isBoss: boolean
+  isBoss: boolean,
 };
 
 const players: Char[] = [...playersFromJson].map((player) => ({
@@ -65,10 +65,10 @@ function fight(player: Char, enemy: Char) {
       console.log(`${enemy.name} loses ${player.str} HP.`);
     } else if (move === '2') {
       if (player.hp + Math.ceil(player.hpMax / 2) <= player.hpMax) {
-        console.log(`You recover ${Math.ceil(player.hpMax / 2)} HP`);
+        console.log(`\u001b[34mYou recover ${Math.ceil(player.hpMax / 2)} HP.\u001b[37m`);
         player.hp += Math.ceil(player.hpMax / 2);
       } else {
-        console.log(`You recover ${player.hpMax - player.hp} HP`);
+        console.log(`\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m`);
         player.hp = player.hpMax;
       }
     }
@@ -80,7 +80,7 @@ function fight(player: Char, enemy: Char) {
   }
   if (enemy.hp <= 0) {
     displayHp(enemy);
-    console.log(`${enemy.name} defeated!`);
+    console.log(`${enemy.name} DEFEATED!`);
   }
   if (player.hp <= 0) {
     displayHp(player);
@@ -92,21 +92,49 @@ function fight(player: Char, enemy: Char) {
 function game(player: Char, enemies: Char[], boss: Char) {
   console.log('You enter Hyrule Castle');
   for (let i = 0; i < enemies.length; i += 1) {
-    console.log(`You are in floor ${i + 1}`);
+    console.log(`\u001b[33mFLOOR ${i + 1}\u001b[37m`);
     fight(player, enemies[i]);
   }
-  console.log('You are in floor 10, Ganon\'s room');
+  console.log('\u001b[35mBOSS FLOOR\u001b[37m');
   fight(player, boss);
   console.log('Congratulations, you saved Hyrule from Evil');
 }
 
-const link = players[0];
+function pickChar(chars: Char[]) {
+  const rarities = [{ idx: 1, pct: 50 }, { idx: 2, pct: 30 }, { idx: 3, pct: 15 }, { idx: 4, pct: 4 }, { idx: 5, pct: 1 }]
+  const randomNumber = Math.floor(Math.random() * 100) + 1;
 
-const enemiesArr: Char[] = [];
-for (let i = 0; i < 9; i += 1) {
-  enemiesArr.push({ ...enemies[11], name: `${enemies[11].name}` });
+  let result: number | undefined = undefined, acc = 0;
+
+  rarities.forEach(rarity => {
+    if (result === undefined && randomNumber > 100 - rarity.pct - acc)
+      result = rarity.idx;
+    acc += rarity.pct;
+  });
+
+  const pickableChars: Char[] = []
+
+  for (const char of chars) {
+    if (char.rarity === result) {
+      pickableChars.push({ ...char })
+    }
+  }
+
+  return pickableChars[Math.floor(Math.random() * pickableChars.length)];
 }
 
-const ganon = bosses[0];
+function pickChars(arr: Char[]) {
+  const pickedChars: Char[] = []
+  for (let i = 0; i < 9; i += 1) {
+    pickedChars.push(pickChar(arr))
+  }
+  return pickedChars
+}
 
-game(link, enemiesArr, ganon);
+const player = pickChar(players);
+
+const monsters = pickChars(enemies)
+
+const boss = pickChar(bosses)
+
+game(player, monsters, boss);
