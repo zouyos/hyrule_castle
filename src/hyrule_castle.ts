@@ -58,7 +58,11 @@ function fight(player: Char, enemy: Char) {
   while (!(enemy.hp <= 0 || player.hp <= 0)) {
     displayHp(player);
     displayHp(enemy);
-    const move = rl.question('==== Options:  1.Attack  2.Heal  ====\n\n');
+    let move = rl.question('==== Options:  [1] Attack  [2] Heal  ====\n\n');
+    while(!['1', '2'].includes(move)) {
+      console.log('Please type a valid entree.');
+      move = rl.question('==== Options:  [1] Attack  [2] Heal  ====\n\n');
+    }
     if (move === '1') {
       enemy.hp -= player.str;
       console.log(`\nYou attack \u001b[31m'${enemy.name}\u001b[37m!\n`);
@@ -72,7 +76,7 @@ function fight(player: Char, enemy: Char) {
         player.hp = player.hpMax;
       }
     }
-    if (enemy.hp !== 0) {
+    if (enemy.hp > 0) {
       console.log(`${enemy.name} attacks!\n`);
       player.hp -= enemy.str;
       console.log(`You lose ${enemy.str} HP.\n`);
