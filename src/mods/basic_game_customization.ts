@@ -18,8 +18,9 @@ type Char = {
   race: number,
   class: number,
   rarity: number,
-  isPlayer: boolean,
-  isBoss: boolean,
+  isPlayer?: boolean,
+  isBoss?: boolean,
+  coins?: number
 };
 
 const players: Char[] = [...playersFromJson].map((player) => ({
@@ -27,18 +28,16 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   isPlayer: true,
   isBoss: false,
   hpMax: player.hp,
+  coins: 12
 }));
 
 const enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
   ...enemy,
-  isPlayer: false,
-  isBoss: false,
   hpMax: enemy.hp,
 }));
 
 const bosses: Char[] = [...bossesFromJson].map((boss) => ({
   ...boss,
-  isPlayer: false,
   isBoss: true,
   hpMax: boss.hp,
 }));
@@ -53,97 +52,24 @@ function displayHp(char: Char) {
   console.log(`${char.isPlayer ? '\u001b[32m' : '\u001b[31m'}${char.name}'s HP: [${hpArray.join('')}] ${char.hp >= 0 ? char.hp : '0'}/${char.hpMax}\u001b[37m\n`);
 }
 
-function fight(player: Char, enemy: Char) {
-  console.log(`You encounter ${enemy.isBoss ? enemy.name : `a \u001b[31m${enemy.name}\u001b[37m`}, prepare to fight!\n`);
-  while (!(enemy.hp <= 0 || player.hp <= 0)) {
-    displayHp(player);
-    displayHp(enemy);
-    const move = rl.question('==== Options:  1.Attack  2.Heal  ====\n\n');
-    if (move === '1') {
-      enemy.hp -= player.str;
-      console.log(`\nYou attack \u001b[31m${enemy.name}\u001b[37m!\n`);
-      console.log(`${enemy.name} loses ${player.str} HP.\n`);
-    } else if (move === '2') {
-      if (player.hp + Math.round(player.hpMax / 2) <= player.hpMax) {
-        console.log(`\n\u001b[34mYou recover ${Math.round(player.hpMax / 2)} HP.\u001b[37m\n`);
-        player.hp += Math.round(player.hpMax / 2);
-      } else {
-        1
-        console.log(`\n\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
-        player.hp = player.hpMax;
-      }
-    }
-    if (enemy.hp !== 0) {
-      console.log(`${enemy.name} attacks!\n`);
-      player.hp -= enemy.str;
-      console.log(`You lose ${enemy.str} HP.\n`);
-    }
-  }
-  if (enemy.hp <= 0) {
-    displayHp(enemy);
-    console.log(`${enemy.name} DEFEATED!\n`);
-  }
-  if (player.hp <= 0) {
-    displayHp(player);
-    console.log('GAME OVER\n');
-    process.exit();
-  }
+function updateChars(chars: Char[], multiplier: number) {
+  return chars.map((char) => {
+    return Object.fromEntries(
+      Object.entries(char).map(([key, val]) => [
+        key,
+        typeof val === 'number' ? Math.round(val * multiplier) : val,
+      ])
+    ) as Char;
+  });
 }
 
-function game(player: Char, monsters: Char[], boss: Char) {
-  let updatedMonsters: Char[] = []
-  let updatedBoss: Char = boss
-  console.log('\n\u001b[37m==== Welcome to Hyrule Castle Game ====\n\n');
-  const newGame = rl.question('[1] New Game\n[2] Quit\n\n');
-  if (newGame === '1') {
-    console.log('\nPlease select a difficulty:\n');
-    const difficulty = rl.question('[1] Normal\n[2] Difficult\n[3] Insane\n\n');
-    if (difficulty === '2') {
-      updatedMonsters = monsters.map((monster) => {
-        return Object.fromEntries(
-          Object.entries(monster).map(([key, val]) => [
-            key,
-            typeof val === 'number' ? Math.round(val * 1.5) : val,
-          ])
-        ) as Char;
-      });
-      updatedBoss = Object.fromEntries(
-        Object.entries(boss).map(([key, val]) => [
-          key,
-          typeof val === 'number' ? Math.round(val * 1.5) : val,
-        ])
-      ) as Char;
-    } else if (difficulty === '3') {
-      updatedMonsters = monsters.map((monster) => {
-        return Object.fromEntries(
-          Object.entries(monster).map(([key, val]) => [
-            key,
-            typeof val === 'number' ? Math.round(val * 2) : val,
-          ])
-        ) as Char;
-      });
-      updatedBoss = Object.fromEntries(
-        Object.entries(boss).map(([key, val]) => [
-          key,
-          typeof val === 'number' ? Math.round(val * 2) : val,
-        ])
-      ) as Char;
-    } else if (difficulty !== '1') {
-      console.log('Please provide a valid entree');
-    }
-    console.log('==== You enter Hyrule Castle ====\n');
-    for (let i = 0; i < updatedMonsters.length; i += 1) {
-      console.log(`\u001b[33m==== FLOOR ${i + 1} ====\u001b[37m\n`);
-      fight(player, updatedMonsters[i]);
-    }
-    console.log('\u001b[35m==== BOSS FLOOR ====\u001b[37m\n');
-    fight(player, updatedBoss);
-    console.log('Congratulations, you saved Hyrule from Evil.\n');
-  } else if (newGame === '2') {
-    process.exit()
-  } else {
-    console.log('Please type a valid entree.');
-  }
+function updateChar(char: Char, multiplier: number) {
+  return Object.fromEntries(
+    Object.entries(char).map(([key, val]) => [
+      key,
+      typeof val === 'number' ? Math.round(val * multiplier) : val,
+    ])
+  ) as Char;
 }
 
 function pickChar(chars: Char[]) {
@@ -175,18 +101,124 @@ function pickChar(chars: Char[]) {
   return pickableChars[Math.floor(Math.random() * pickableChars.length)];
 }
 
-function pickChars(arr: Char[]) {
-  const pickedChars: Char[] = [];
-  for (let i = 0; i < 9; i += 1) {
-    pickedChars.push(pickChar(arr));
+function pickEnemies(arr: Char[], multiplier: number) {
+  const pickedEnemies: Char[] = [];
+  for (let i = 0; i < multiplier; i += 1) {
+    pickedEnemies.push(pickChar(arr));
   }
-  return pickedChars;
+  return pickedEnemies;
 }
 
-const player = pickChar(players);
+function pickBosses(arr: Char[], multiplier: number) {
+  const pickedBosses: Char[] = [];
+  for (let i = 1; i <= multiplier; i += 1) {
+    i % 10 === 0 && pickedBosses.push(pickChar(arr));
+  }
+  return pickedBosses;
+}
 
-const monsters = pickChars(enemies);
+function fight(player: Char, enemy: Char) {
+  console.log(`You encounter ${enemy.isBoss ? enemy.name : `a \u001b[31m${enemy.name}\u001b[37m`}, prepare to fight!\n`);
+  while (!(enemy.hp <= 0 || player.hp <= 0)) {
+    displayHp(player);
+    displayHp(enemy);
+    const move = rl.question('==== Options:  1. Attack   2. Heal  ====\n\n');
+    if (move === '1') {
+      enemy.hp -= player.str;
+      console.log(`\nYou attack \u001b[31m${enemy.name}\u001b[37m!\n`);
+      console.log(`${enemy.name} loses ${player.str} HP.\n`);
+    } else if (move === '2') {
+      if (player.hp + Math.round(player.hpMax / 2) <= player.hpMax) {
+        console.log(`\n\u001b[34mYou recover ${Math.round(player.hpMax / 2)} HP.\u001b[37m\n`);
+        player.hp += Math.round(player.hpMax / 2);
+      } else {
+        console.log(`\n\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
+        player.hp = player.hpMax;
+      }
+    }
+    if (enemy.hp > 0) {
+      console.log(`${enemy.name} attacks!\n`);
+      player.hp -= enemy.str;
+      console.log(`You lose ${enemy.str} HP.\n`);
+    }
+  }
+  if (enemy.hp <= 0) {
+    displayHp(enemy);
+    console.log(`${enemy.name} DEFEATED!\n`);
+    player.coins && (player.coins += 1)
+  }
+  if (player.hp <= 0) {
+    displayHp(player);
+    console.log('GAME OVER\n');
+    process.exit();
+  }
+}
 
-const boss = pickChar(bosses);
+function game() {
+  const player: Char = pickChar(players)
+  let updatedEnemies: Char[] = enemies
+  let updatedBosses: Char[] = bosses
+  let nbFights: number = 10
+  console.log('\n\u001b[37m==== Welcome to Hyrule Castle Game ====\n\n');
+  let newGame = rl.question('[1] New Game\n[2] Quit\n\n');
+  while (!['1', '2'].includes(newGame)) {
+    console.log('\nPlease type a valid entree\n');
+    newGame = rl.question('[1] New Game\n[2] Quit\n\n');
+  }
+  if (newGame === '1') {
+    console.log('\nPlease select a number of fights:\n');
+    let rlNbFights = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
+    while (!['1', '2', '3', '4'].includes(rlNbFights)) {
+      console.log('\nPlease type a valid entree\n');
+      rlNbFights = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
+    }
+    switch (rlNbFights) {
+      case '1':
+        nbFights = 10
+        break;
+      case '2':
+        nbFights = 20
+        break;
+      case '3':
+        nbFights = 50
+        break;
+      case '4':
+        nbFights = 100
+        break;
+      default:
+        nbFights = 10
+        break;
+    }
+    updatedEnemies = pickEnemies(updatedEnemies, nbFights)
+    updatedBosses = pickBosses(updatedBosses, nbFights)
+    console.log('\nPlease select a difficulty:\n');
+    let difficulty = rl.question('[1] Normal\n[2] Difficult\n[3] Insane\n\n');
+    while (!['1', '2', '3'].includes(difficulty)) {
+      console.log('\nPlease type a valid entree\n');
+      difficulty = rl.question('[1] Normal\n[2] Difficult\n[3] Insane\n\n');
+    }
+    if (difficulty === '2') {
+      updatedEnemies = updateChars(updatedEnemies, 1.5)
+      updatedBosses = updateChars(updatedBosses, 1.5)
+    } else if (difficulty === '3') {
+      updatedEnemies = updateChars(updatedEnemies, 1.5)
+      updatedBosses = updateChars(updatedBosses, 1.5)
+    }
+    console.log('\n==== You enter Hyrule Castle ====\n');
+    for (let i = 1; i <= nbFights; i += 1) {
+      if (!(i % 10 === 0)) {
+        console.log(`\u001b[33m==== FLOOR ${i} ====\u001b[37m\n`)
+        fight(player, updatedEnemies[i]);
+        console.log(`You earned 1 coin, you have now ${player.coins} coins.\n`);
+      } else {
+        console.log('\u001b[35m==== BOSS FLOOR ====\u001b[37m\n')
+        fight(player, updatedBosses[(i - 10) - 1]);
+      }
+    }
+    console.log('Congratulations, you saved Hyrule from Evil.\n');
+  } else if (newGame === '2') {
+    process.exit()
+  }
+}
 
-game(player, monsters, boss);
+game();
