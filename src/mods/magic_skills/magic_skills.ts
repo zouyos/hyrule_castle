@@ -1,32 +1,41 @@
 import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
-import { type Char } from '../lib/Char';
+import * as spellsFromJson from '../../../data/spells.json';
+import { type Char, Spell } from '../lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
 import {
-  displayHp, playerTurn, heal, enemyTurn,
+  displayHp, playerTurn, enemyTurn,
+  castSpell,
+  displayMp,
 } from './utils/fight';
 
 const rl = require('readline-sync');
+
+const spells: Spell[] = [...spellsFromJson]
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,
   isPlayer: true,
   hpMax: player.hp,
+  mpMax: player.mp,
   coins: 12,
+  spells: spells
 }));
 
 let enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
   ...enemy,
   hpMax: enemy.hp,
+  mpMax: enemy.mp,
 }));
 
 let bosses: Char[] = [...bossesFromJson].map((boss) => ({
   ...boss,
   isBoss: true,
   hpMax: boss.hp,
+  mpMax: boss.mp,
 }));
 
 function fight(player: Char, enemy: Char) {
@@ -37,12 +46,14 @@ function fight(player: Char, enemy: Char) {
   }
   while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
     displayHp(player);
+    displayMp(player);
     displayHp(enemy);
+    displayMp(enemy);
     console.log('==== Options: ====\n');
-    let move = rl.question('[1] Attack\n[2] Protect\n[3] Heal\n[4] Escape\n\n');
+    let move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     while (!['1', '2', '3', '4'].includes(move)) {
       console.log('Please type a valid entree.');
-      move = rl.question('[1] Attack\n[2] Protect\n[3] Heal\n[4] Escape\n\n');
+      move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     }
     if (move === '4') {
       escape = true;
@@ -51,7 +62,21 @@ function fight(player: Char, enemy: Char) {
       playerTurn(player, enemy);
     }
     if (move === '3') {
-      heal(player);
+      console.log('\n==== Spells: ====\n');
+      let displaySpells: string = ''
+      spells.forEach((spell) => {
+        displaySpells += `[${spell.id}] \u001b[1m${spell.name}\u001b[0m\n${spell.effect}\u001b[0m\u001b[37m\n`
+      })
+      let spellChoice = rl.question(`${displaySpells}\n`);
+      let choicesArr: string[] = []
+      spells.forEach((spell) => {
+        choicesArr.push(spell.id.toString())
+      })
+      while (!choicesArr.includes(spellChoice)) {
+        console.log('Please type a valid entree.');
+        spellChoice = rl.question(`${displaySpells}`);
+      }
+      castSpell(player, spells[spellChoice - 1], enemy)
     }
     if (enemy.hp > 0) {
       if (move !== '2') {
@@ -65,12 +90,12 @@ function fight(player: Char, enemy: Char) {
     displayHp(enemy);
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
-    console.log(`You earned 1 coin, you have now ${player.coins} coins.\n`);
+    console.log(`You earned \u001b[43m1 coin\u001b[37m, you have now \u001b[43m${player.coins} coins\u001b[37m.\n`);
   }
   if (escape) {
     console.log('\nYou escaped to the next floor.\n');
     player.coins && (player.coins -= 1);
-    console.log(`You lose 1 coin, you have now ${player.coins} coins.\n`);
+    console.log(`You lost \u001b[43m1 coin\u001b[37m, you have now \u001b[43m${player.coins} coins\u001b[37m.\n`);
   }
   if (player.hp <= 0) {
     displayHp(player);
