@@ -59,7 +59,7 @@ function fight(player: Char, enemy: Char) {
     displayHp(player);
     displayHp(enemy);
     let move = rl.question('==== Options:  [1] Attack  [2] Heal  ====\n\n');
-    while(!['1', '2'].includes(move)) {
+    while (!['1', '2'].includes(move)) {
       console.log('Please type a valid entree.');
       move = rl.question('==== Options:  [1] Attack  [2] Heal  ====\n\n');
     }
@@ -68,9 +68,9 @@ function fight(player: Char, enemy: Char) {
       console.log(`\nYou attack \u001b[31m'${enemy.name}\u001b[37m!\n`);
       console.log(`${enemy.name} loses ${player.str} HP.\n`);
     } else if (move === '2') {
-      if (player.hp + Math.ceil(player.hpMax / 2) <= player.hpMax) {
-        console.log(`\n\u001b[34mYou recover ${Math.ceil(player.hpMax / 2)} HP.\u001b[37m\n`);
-        player.hp += Math.ceil(player.hpMax / 2);
+      if (player.hp + Math.floor(player.hpMax / 2) <= player.hpMax) {
+        console.log(`\n\u001b[34mYou recover ${Math.floor(player.hpMax / 2)} HP.\u001b[37m\n`);
+        player.hp += Math.floor(player.hpMax / 2);
       } else {
         console.log(`\n\u001b[34mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
         player.hp = player.hpMax;

@@ -214,7 +214,7 @@ function game() {
         console.log(`You earned 1 coin, you have now ${player.coins} coins.\n`);
       } else {
         console.log('\u001b[35m==== BOSS FLOOR ====\u001b[37m\n');
-        fight(player, updatedBosses[(i - 10) - 1]);
+        fight(player, updatedBosses[(i / 10) - 1]);
       }
     }
     console.log('Congratulations, you saved Hyrule from Evil.\n');
