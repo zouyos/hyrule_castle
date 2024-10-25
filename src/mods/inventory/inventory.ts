@@ -1,32 +1,41 @@
 import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
-import { type Char } from '../lib/Char';
+import * as spellsFromJson from '../../../data/spells.json';
+import { type Char, Spell } from '../lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
 import {
-  displayHp, playerTurn, heal, enemyTurn,
+  displayGauges, playerTurn, enemyTurn,
+  castSpell,
+  displaySpells,
 } from './utils/fight';
 
 const rl = require('readline-sync');
+
+const spells: Spell[] = [...spellsFromJson];
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,
   isPlayer: true,
   hpMax: player.hp,
+  mpMax: player.mp,
   coins: 12,
+  spells,
 }));
 
 let enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
   ...enemy,
   hpMax: enemy.hp,
+  mpMax: enemy.mp,
 }));
 
 let bosses: Char[] = [...bossesFromJson].map((boss) => ({
   ...boss,
   isBoss: true,
   hpMax: boss.hp,
+  mpMax: boss.mp,
 }));
 
 function fight(player: Char, enemy: Char) {
@@ -35,25 +44,28 @@ function fight(player: Char, enemy: Char) {
   if (enemy.spd > player.spd) {
     enemyTurn(player, enemy, false);
   }
-  while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
-    displayHp(player);
-    displayHp(enemy);
+  mainLoop: while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
+    displayGauges(player);
+    displayGauges(enemy);
     console.log('==== Options: ====\n');
-    let move = rl.question('[1] Attack\n[2] Protect\n[3] Heal\n[4] Escape\n\n');
+    let move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     while (!['1', '2', '3', '4'].includes(move)) {
       console.log('Please type a valid entree.');
-      move = rl.question('[1] Attack\n[2] Protect\n[3] Heal\n[4] Escape\n\n');
+      move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     }
     if (move === '4') {
       escape = true;
-    }
-    if (move === '1') {
+    } else if (move === '1') {
       playerTurn(player, enemy);
+    } else if (move === '3') {
+      const spellChoice = displaySpells(spells);
+      if (spellChoice === '0') {
+        console.log('');
+        continue mainLoop;
+      }
+      castSpell(player, spells[Number(spellChoice) - 1], enemy);
     }
-    if (move === '3') {
-      heal(player);
-    }
-    if (enemy.hp > 0) {
+    if (enemy.hp > 0 && move !== '4') {
       if (move !== '2') {
         enemyTurn(player, enemy, false);
       } else {
@@ -62,18 +74,16 @@ function fight(player: Char, enemy: Char) {
     }
   }
   if (enemy.hp <= 0) {
-    displayHp(enemy);
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
-    console.log(`You earned 1 coin, you have now ${player.coins} coins.\n`);
+    console.log(`You earned \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
   }
   if (escape) {
     console.log('\nYou escaped to the next floor.\n');
     player.coins && (player.coins -= 1);
-    console.log(`You lose 1 coin, you have now ${player.coins} coins.\n`);
+    console.log(`You lost \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
   }
   if (player.hp <= 0) {
-    displayHp(player);
     console.log('GAME OVER\n');
     process.exit();
   }

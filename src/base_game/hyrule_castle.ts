@@ -20,7 +20,11 @@ function fight(player: Hero, monster: Monster) {
   while (!(monster.HP <= 0 || player.HP <= 0)) {
     displayHP(player);
     displayHP(monster);
-    const move = rl.question('---- Options: 1.Attack 2.Heal ----\n');
+    let move = rl.question('---- Options: 1.Attack 2.Heal ----\n');
+    while (!['1', '2'].includes(move)) {
+      console.log('Please type a valid entree.');
+      move = rl.question('---- Options: 1.Attack 2.Heal ----\n');
+    }
     if (move === '1') {
       player.attack(monster);
       displayHP(monster);
@@ -33,7 +37,6 @@ function fight(player: Hero, monster: Monster) {
     }
   }
   if (monster.HP <= 0) {
-    displayHP(monster);
     console.log(`${monster.name} defeated!`);
   }
   if (player.HP <= 0) {
@@ -44,7 +47,7 @@ function fight(player: Hero, monster: Monster) {
 }
 
 function game(player: Hero, mobs: Monster[], boss: Monster) {
-  console.log('You enter Hyrule Castle');
+  console.log('\u001b[37mYou enter Hyrule Castle');
   for (let i = 0; i < mobs.length; i += 1) {
     console.log(`You are in floor ${i + 1}`);
     fight(player, mobs[i]);

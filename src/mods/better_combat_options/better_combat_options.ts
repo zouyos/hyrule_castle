@@ -1,7 +1,7 @@
 import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
-import { type Char } from '../lib/Char';
+import { type Char } from '../lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';

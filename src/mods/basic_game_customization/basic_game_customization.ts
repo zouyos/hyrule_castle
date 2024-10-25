@@ -1,6 +1,6 @@
-import * as playersFromJson from '../../data/players.json';
-import * as enemiesFromJson from '../../data/enemies.json';
-import * as bossesFromJson from '../../data/bosses.json';
+import * as playersFromJson from '../../../data/players.json';
+import * as enemiesFromJson from '../../../data/enemies.json';
+import * as bossesFromJson from '../../../data/bosses.json';
 
 const rl = require('readline-sync');
 
