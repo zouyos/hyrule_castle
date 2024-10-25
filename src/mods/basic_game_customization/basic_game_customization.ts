@@ -61,15 +61,6 @@ function updateChars(chars: Char[], multiplier: number) {
   ) as Char);
 }
 
-// function updateChar(char: Char, multiplier: number) {
-//   return Object.fromEntries(
-//     Object.entries(char).map(([key, val]) => [
-//       key,
-//       typeof val === 'number' ? Math.round(val * multiplier) : val,
-//     ]),
-//   ) as Char;
-// }
-
 function pickChar(chars: Char[]) {
   const rarities = [
     { idx: 1, pct: 50 },
@@ -169,28 +160,12 @@ function game() {
   }
   if (newGame === '1') {
     console.log('\nPlease select a number of fights:\n');
-    let rlNbFights = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
-    while (!['1', '2', '3', '4'].includes(rlNbFights)) {
+    nbFights = rl.question('[10]\n[20]\n[50]\n[100]\n\n');
+    while (!['10', '20', '50', '100'].includes(nbFights.toString())) {
       console.log('\nPlease type a valid entree\n');
-      rlNbFights = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
+      nbFights = rl.question('[10]\n[20]\n[50]\n[100]\n\n');
     }
-    switch (rlNbFights) {
-      case '1':
-        nbFights = 10;
-        break;
-      case '2':
-        nbFights = 20;
-        break;
-      case '3':
-        nbFights = 50;
-        break;
-      case '4':
-        nbFights = 100;
-        break;
-      default:
-        nbFights = 10;
-        break;
-    }
+    nbFights = Number(nbFights);
     updatedEnemies = pickEnemies(updatedEnemies, nbFights);
     updatedBosses = pickBosses(updatedBosses, nbFights);
     console.log('\nPlease select a difficulty:\n');
@@ -203,8 +178,8 @@ function game() {
       updatedEnemies = updateChars(updatedEnemies, 1.5);
       updatedBosses = updateChars(updatedBosses, 1.5);
     } else if (difficulty === '3') {
-      updatedEnemies = updateChars(updatedEnemies, 1.5);
-      updatedBosses = updateChars(updatedBosses, 1.5);
+      updatedEnemies = updateChars(updatedEnemies, 2);
+      updatedBosses = updateChars(updatedBosses, 2);
     }
     console.log('\n==== You enter Hyrule Castle ====\n');
     for (let i = 1; i <= nbFights; i += 1) {
