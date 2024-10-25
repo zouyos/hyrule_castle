@@ -7,9 +7,9 @@ import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
 import {
-  displayHp, playerTurn, enemyTurn,
+  displayGauges, playerTurn, enemyTurn,
   castSpell,
-  displayMp,
+  displaySpells,
 } from './utils/fight';
 
 const rl = require('readline-sync');
@@ -44,11 +44,9 @@ function fight(player: Char, enemy: Char) {
   if (enemy.spd > player.spd) {
     enemyTurn(player, enemy, false);
   }
-  while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
-    displayHp(player);
-    displayMp(player);
-    displayHp(enemy);
-    displayMp(enemy);
+  mainLoop: while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
+    displayGauges(player)
+    displayGauges(enemy)
     console.log('==== Options: ====\n');
     let move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     while (!['1', '2', '3', '4'].includes(move)) {
@@ -57,28 +55,17 @@ function fight(player: Char, enemy: Char) {
     }
     if (move === '4') {
       escape = true;
-    }
-    if (move === '1') {
+    } else if (move === '1') {
       playerTurn(player, enemy);
-    }
-    if (move === '3') {
-      console.log('\n==== Spells: ====\n');
-      let displaySpells: string = ''
-      spells.forEach((spell) => {
-        displaySpells += `[${spell.id}] \u001b[1m${spell.name}\u001b[0m\n${spell.effect}\u001b[0m\u001b[37m\n`
-      })
-      let spellChoice = rl.question(`${displaySpells}\n`);
-      let choicesArr: string[] = []
-      spells.forEach((spell) => {
-        choicesArr.push(spell.id.toString())
-      })
-      while (!choicesArr.includes(spellChoice)) {
-        console.log('Please type a valid entree.');
-        spellChoice = rl.question(`${displaySpells}`);
+    } else if (move === '3') {
+      let spellChoice = displaySpells(spells)
+      if (spellChoice === '0') {
+        console.log('');
+        continue mainLoop
       }
-      castSpell(player, spells[spellChoice - 1], enemy)
+      castSpell(player, spells[Number(spellChoice) - 1], enemy)
     }
-    if (enemy.hp > 0) {
+    if (enemy.hp > 0 && move !== '4') {
       if (move !== '2') {
         enemyTurn(player, enemy, false);
       } else {
@@ -87,18 +74,16 @@ function fight(player: Char, enemy: Char) {
     }
   }
   if (enemy.hp <= 0) {
-    displayHp(enemy);
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
-    console.log(`You earned \u001b[43m1 coin\u001b[37m, you have now \u001b[43m${player.coins} coins\u001b[37m.\n`);
+    console.log(`You earned \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
   }
   if (escape) {
     console.log('\nYou escaped to the next floor.\n');
     player.coins && (player.coins -= 1);
-    console.log(`You lost \u001b[43m1 coin\u001b[37m, you have now \u001b[43m${player.coins} coins\u001b[37m.\n`);
+    console.log(`You lost \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
   }
   if (player.hp <= 0) {
-    displayHp(player);
     console.log('GAME OVER\n');
     process.exit();
   }
