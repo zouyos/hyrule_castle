@@ -14,7 +14,7 @@ import {
 
 const rl = require('readline-sync');
 
-const spells: Spell[] = [...spellsFromJson]
+const spells: Spell[] = [...spellsFromJson];
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,
@@ -22,7 +22,7 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   hpMax: player.hp,
   mpMax: player.mp,
   coins: 12,
-  spells: spells
+  spells,
 }));
 
 let enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
@@ -45,8 +45,8 @@ function fight(player: Char, enemy: Char) {
     enemyTurn(player, enemy, false);
   }
   mainLoop: while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
-    displayGauges(player)
-    displayGauges(enemy)
+    displayGauges(player);
+    displayGauges(enemy);
     console.log('==== Options: ====\n');
     let move = rl.question('[1] Attack\n[2] Protect\n[3] Spells\n[4] Escape\n\n');
     while (!['1', '2', '3', '4'].includes(move)) {
@@ -58,12 +58,12 @@ function fight(player: Char, enemy: Char) {
     } else if (move === '1') {
       playerTurn(player, enemy);
     } else if (move === '3') {
-      let spellChoice = displaySpells(spells)
+      const spellChoice = displaySpells(spells);
       if (spellChoice === '0') {
         console.log('');
-        continue mainLoop
+        continue mainLoop;
       }
-      castSpell(player, spells[Number(spellChoice) - 1], enemy)
+      castSpell(player, spells[Number(spellChoice) - 1], enemy);
     }
     if (enemy.hp > 0 && move !== '4') {
       if (move !== '2') {
