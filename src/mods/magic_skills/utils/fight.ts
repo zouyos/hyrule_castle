@@ -101,7 +101,8 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
   }
   if (spell.heal) {
     if (player.hp === player.hpMax) {
-      console.log('Your HP are already at maximum.');
+      console.log('\nYour HP are already at maximum.\n');
+      return;
     }
     if (typeof spell.heal === 'number' && player.hp + spell.heal <= player.hpMax) {
       player.hp += spell.heal;
@@ -115,7 +116,8 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
   }
   if (spell.restore) {
     if (player.mp === player.mpMax) {
-      console.log('Your MP are already at maximum.');
+      console.log('\nYour MP are already at maximum.\n');
+      return;
     }
     console.log(`\n\u001b[36mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
     player.mp = player.mpMax;
