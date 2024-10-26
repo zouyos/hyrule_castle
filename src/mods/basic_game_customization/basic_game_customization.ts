@@ -1,27 +1,9 @@
 import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
+import { Char } from '../../lib/types';
 
 const rl = require('readline-sync');
-
-type Char = {
-  name: string,
-  hp: number,
-  hpMax: number,
-  mp: number,
-  str: number,
-  int: number,
-  def: number,
-  res: number,
-  spd: number,
-  luck: number,
-  race: number,
-  class: number,
-  rarity: number,
-  isPlayer?: boolean,
-  isBoss?: boolean,
-  coins?: number
-};
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,

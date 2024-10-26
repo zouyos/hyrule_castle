@@ -1,4 +1,4 @@
-import { type Char, Spell } from '../../lib/types';
+import { type Char, Spell } from '../../../lib/types';
 
 const rl = require('readline-sync');
 

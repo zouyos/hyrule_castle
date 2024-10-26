@@ -3,7 +3,7 @@ export type Char = {
   hp: number,
   hpMax: number,
   mp: number,
-  mpMax?: number,
+  mpMax: number,
   str: number,
   int: number,
   def: number,
@@ -16,7 +16,8 @@ export type Char = {
   isPlayer?: boolean,
   isBoss?: boolean,
   coins?: number,
-  spells?: Spell[]
+  spells?: Spell[],
+  inventory?: Item[]
 };
 
 export type Spell = {
@@ -29,4 +30,23 @@ export type Spell = {
   race: string[],
   class: string[],
   rarity: number
+}
+
+export type Item = {
+  id: number,
+  name: string,
+  effect: string,
+  hpBoost: number,
+  mpBoost: number,
+  strBoost: number,
+  intBoost: number,
+  defBoost: number,
+  resBoost: number,
+  spdBoost: number,
+  luckBoost: number,
+  race: string[],
+  class: string[],
+  rarity: number,
+  usable?: boolean,
+  equipable?: boolean
 }

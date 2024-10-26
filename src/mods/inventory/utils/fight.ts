@@ -1,4 +1,4 @@
-import { type Char, Spell } from '../../lib/types';
+import { type Char, Item } from '../lib/types';
 
 const rl = require('readline-sync');
 
@@ -54,78 +54,76 @@ export function playerTurn(player: Char, enemy: Char) {
   }
 }
 
-export function displaySpells(spells: Spell[]): string {
-  console.log('\n==== Spells: ====\n');
-  let displayedSpells: string = '';
-  spells.forEach((spell, i) => {
-    displayedSpells += `[${i + 1}] \u001b[1m${spell.name}\u001b[0m\n${spell.effect}\u001b[0m\u001b[37m\n`;
-    i === spells.length - 1 && (displayedSpells += '[0] \u001b[1mBack\u001b[0m\u001b[37m\n');
+export function displayInventory(inventory: Item[]): string {
+  console.log('\n==== Inventory: ====\n');
+  let displayedItems: string = '';
+  inventory.forEach((item, i) => {
+    displayedItems += `[${i + 1}] \u001b[1m${item.name}\u001b[0m\n${item.effect}\u001b[0m\u001b[37m\n`;
+    i === inventory.length - 1 && (displayedItems += '[0] \u001b[1mBack\u001b[0m\u001b[37m\n');
   });
-  let spellChoice: string = rl.question(`${displayedSpells}\n`);
+  let itemChoice: string = rl.question(`${displayedItems}\n`);
   const choicesArr: string[] = ['0'];
-  spells.forEach((spell) => {
-    choicesArr.push(spell.id.toString());
+  inventory.forEach((item) => {
+    choicesArr.push(item.id.toString());
   });
-  while (!choicesArr.includes(spellChoice)) {
+  while (!choicesArr.includes(itemChoice)) {
     console.log('Please type a valid entree.');
-    spellChoice = rl.question(`${displayedSpells}`);
+    itemChoice = rl.question(`${displayedItems}`);
   }
-  return spellChoice;
+  return itemChoice;
 }
 
-export function castSpell(player: Char, spell: Spell, enemy: Char) {
-  if (player.mp < spell.cost) {
-    console.log(`You have ${player.mp} MP and this spell costs ${spell.cost}.\nYou cannot cast it.`);
-    return;
-  }
-  if (spell.name === 'Fireball') {
-    console.log(`\nYou cast a Fireball on \u001b[31m${enemy.name}\u001b[37m!\n`);
-    const dodge: boolean = calcDodge(player, enemy);
-    const crit: boolean = calcCrit(player);
-    if (dodge) {
-      console.log(`\u001b[31m${enemy.name}\u001b[37m dodges your hit!\n`);
-      player.mp -= spell.cost;
+export function useItem(player: Char, item: Item) {
+  if (item.usable) {
+    const hpBoost: boolean = item.hpBoost > 0
+    if (hpBoost) {
+      if (player.hp === player.hpMax) {
+        console.log('\nYour HP are already at maximum.\n');
+        return false
+      }
     } else {
-      const baseDamage = 25;
-      const calcPlayerDamage = Math.floor(baseDamage - (baseDamage * (enemy.res / 100)));
-      if (crit) {
-        enemy.hp -= calcPlayerDamage * 2;
-        player.mp -= spell.cost;
-        console.log(`CRITICAL HIT! \u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage * 2} HP.\n`);
+      if (player.mp === player.mpMax) {
+        console.log('\nYour MP are already at maximum.\n');
+        return false
+      }
+    }
+    const baseBoost: number = item.hpBoost > 0 ? item.hpBoost : item.mpBoost;
+    console.log(`\nYou use a ${item.name}.\n`);
+    if (hpBoost) {
+      if (player.hp + baseBoost <= player.hpMax) {
+        player.hp += baseBoost;
+        // item - 1
+        console.log(`\n\u001b[36mYou recover ${baseBoost} HP.\u001b[37m\n`);
       } else {
-        enemy.hp -= calcPlayerDamage;
-        player.mp -= spell.cost;
-        console.log(`\u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage} HP.\n`);
+        console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
+        player.hp = player.hpMax;
+        // item - 1
+      }
+    } else {
+      if (player.mp + baseBoost <= player.mpMax) {
+        player.mp += baseBoost;
+        // item - 1
+        console.log(`\n\u001b[34mYou recover ${baseBoost} MP.\u001b[37m\n`);
+      } else {
+        console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
+        player.hp = player.hpMax;
+        // item - 1
       }
     }
   }
-  if (spell.name === 'Heal') {
-    if (player.hp === player.hpMax) {
-      console.log('Your HP are already at maximum.');
-    }
-    if (player.hp + 20 <= player.hpMax) {
-      player.hp += 20;
-      player.mp -= spell.cost;
-      console.log('\n\u001b[36mYou recover 20 HP.\u001b[37m\n');
-    } else {
-      console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
-      player.hp = player.hpMax;
-      player.mp -= spell.cost;
-    }
-  }
-  if (spell.name === 'Heal II') {
-    if (player.hp === player.hpMax) {
-      console.log('Your HP are already at maximum.');
-    }
-    if (player.hp + 50 <= player.hpMax) {
-      console.log('\n\u001b[36mYou recover 50 HP.\u001b[37m\n');
-      player.hp += 50;
-      player.mp -= spell.cost;
-    } else {
-      console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
-      player.hp = player.hpMax;
-      player.mp -= spell.cost;
-    }
+
+  if (item.equipable) {
+    const boostLines = []
+    Object.entries(item).forEach(([iKey, iVal]) => {
+      if (typeof iVal === 'number' && iKey.includes('Boost') && iVal > 0) {
+        Object.entries(player).forEach(([pKey, pVal]) => {
+          if (typeof pVal === 'number' && iKey.includes(pKey)) {
+            console.log(`${pKey} + ${iVal}`);
+            player[pKey] += iVal
+          }
+        })
+      }
+    })
   }
 }
 

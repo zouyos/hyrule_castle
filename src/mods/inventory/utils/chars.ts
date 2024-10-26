@@ -1,4 +1,4 @@
-import { Char } from "../../lib/types";
+import { Char } from "../lib/types";
 
 export function updateChars(chars: Char[], multiplier: number) {
   return chars.map((char) => Object.fromEntries(

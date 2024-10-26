@@ -2,7 +2,7 @@ import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
 import * as spellsFromJson from '../../../data/spells.json';
-import { type Char, Spell } from '../lib/types';
+import { type Char, Spell } from '../../lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
@@ -118,8 +118,8 @@ function game() {
       enemies = updateChars(enemies, 1.5);
       bosses = updateChars(bosses, 1.5);
     } else if (difficulty === '3') {
-      enemies = updateChars(enemies, 1.5);
-      bosses = updateChars(bosses, 1.5);
+      enemies = updateChars(enemies, 2);
+      bosses = updateChars(bosses, 2);
     }
     console.log('\n==== You enter Hyrule Castle ====\n');
     for (let i = 1; i <= nbFights; i += 1) {

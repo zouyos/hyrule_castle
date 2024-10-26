@@ -1,7 +1,44 @@
 [
   {
     "id":1,
+    "name":"Sword",
+    "effect": "",
+    "hpBoost":0,
+    "mpBoost":0,
+    "strBoost":0,
+    "intBoost":0,
+    "defBoost":0,
+    "resBoost":0,
+    "spdBoost":0,
+    "luckBoost":0,
+    "race":[],
+    "class":[],
+    "rarity":0,
+    "equipable": true,
+    "equiped": true
+  },
+  {
+    "id":2,
+    "name":"Shield",
+    "effect": "",
+    "hpBoost":0,
+    "mpBoost":0,
+    "strBoost":0,
+    "intBoost":0,
+    "defBoost":0,
+    "resBoost":0,
+    "spdBoost":0,
+    "luckBoost":0,
+    "race":[],
+    "class":[],
+    "rarity":0,
+    "equipable": true,
+    "equiped": true
+  },
+  {
+    "id":3,
     "name":"Light Sword",
+    "effect": "+5 str, +20 spd, +5 lck",
     "hpBoost":0,
     "mpBoost":0,
     "strBoost":5,
@@ -12,12 +49,14 @@
     "luckBoost":5,
     "race":[],
     "class":[],
-    "rarity":3,
-    "equipable": true
+    "rarity":2,
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":2,
+    "id":4,
     "name":"Heavy Sword",
+    "effect": "+30 str, -10 spd, +5 lck",
     "hpBoost":0,
     "mpBoost":0,
     "strBoost":30,
@@ -29,11 +68,13 @@
     "race":[],
     "class":[],
     "rarity":3,
-    "equipable": true
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":3,
+    "id":5,
     "name":"Master Sword",
+    "effect": "+30 hpM, +30 mpM, +20 str, +10 spd, +30 lck",
     "hpBoost":30,
     "mpBoost":30,
     "strBoost":20,
@@ -45,11 +86,13 @@
     "race":[],
     "class":[],
     "rarity":5,
-    "equipable": true
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":4,
+    "id":6,
     "name":"Light Shield",
+    "effect": "+5 def, +5 res, +10 spd",
     "hpBoost":0,
     "mpBoost":0,
     "strBoost":0,
@@ -61,11 +104,13 @@
     "race":[],
     "class":[],
     "rarity":2,
-    "equipable": true
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":5,
+    "id":7,
     "name":"Heavy Shield",
+    "effect": "",
     "hpBoost":30,
     "mpBoost":0,
     "strBoost":0,
@@ -77,11 +122,13 @@
     "race":[],
     "class":[],
     "rarity":3,
-    "equipable": true
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":6,
+    "id":8,
     "name":"Hylia Shield",
+    "effect": "",
     "hpBoost":50,
     "mpBoost":20,
     "strBoost":0,
@@ -93,11 +140,13 @@
     "race":[],
     "class":[],
     "rarity":5,
-    "equipable": true
+    "equipable": true,
+    "equiped": false
   },
   {
-    "id":7,
+    "id":9,
     "name":"Potion",
+    "effect": "",
     "hpBoost":20,
     "mpBoost":0,
     "strBoost":0,
@@ -112,8 +161,9 @@
     "usable": true
   },
   {
-    "id":8,
+    "id":10,
     "name":"Potion+",
+    "effect": "",
     "hpBoost":50,
     "mpBoost":0,
     "strBoost":0,
@@ -128,8 +178,9 @@
     "usable": true
   },
   {
-    "id":9,
+    "id":11,
     "name":"Potion++",
+    "effect": "",
     "hpBoost":100,
     "mpBoost":0,
     "strBoost":0,
@@ -144,8 +195,9 @@
     "usable": true
   },
   {
-    "id":10,
+    "id":12,
     "name":"Herbs",
+    "effect": "",
     "hpBoost":0,
     "mpBoost":15,
     "strBoost":0,
@@ -160,8 +212,9 @@
     "usable": true
   },
   {
-    "id":11,
+    "id":13,
     "name":"Herbs+",
+    "effect": "",
     "hpBoost":0,
     "mpBoost":25,
     "strBoost":0,
@@ -176,8 +229,9 @@
     "usable": true
   },
   {
-    "id":12,
+    "id":14,
     "name":"Herbs++",
+    "effect": "",
     "hpBoost":0,
     "mpBoost":50,
     "strBoost":0,

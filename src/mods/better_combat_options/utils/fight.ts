@@ -1,4 +1,4 @@
-import { type Char } from '../../lib/Char';
+import { type Char } from '../../../lib/types';
 
 export function displayHp(char: Char) {
   const hpArray: string[] = Array(char.hpMax).fill('I');
