@@ -75,18 +75,18 @@ export function displaySpells(spells: Spell[]): string {
 
 export function castSpell(player: Char, spell: Spell, enemy: Char) {
   if (player.mp < spell.cost) {
-    console.log(`You have ${player.mp} MP and this spell costs ${spell.cost}.\nYou cannot cast it.`);
+    console.log(`\nYou have ${player.mp} MP and this spell costs ${spell.cost}.\n\nYou cannot cast it.\n`);
     return;
   }
-  if (spell.name === 'Fireball') {
-    console.log(`\nYou cast a Fireball on \u001b[31m${enemy.name}\u001b[37m!\n`);
+  if (spell.dmg) {
+    console.log(`\nYou cast a ${spell.name} on \u001b[31m${enemy.name}\u001b[37m!\n`);
     const dodge: boolean = calcDodge(player, enemy);
     const crit: boolean = calcCrit(player);
     if (dodge) {
       console.log(`\u001b[31m${enemy.name}\u001b[37m dodges your hit!\n`);
       player.mp -= spell.cost;
     } else {
-      const baseDamage = 25;
+      const baseDamage = spell.dmg;
       const calcPlayerDamage = Math.floor(baseDamage - (baseDamage * (enemy.res / 100)));
       if (crit) {
         enemy.hp -= calcPlayerDamage * 2;
@@ -99,12 +99,12 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
       }
     }
   }
-  if (spell.name === 'Heal') {
+  if (spell.heal) {
     if (player.hp === player.hpMax) {
       console.log('Your HP are already at maximum.');
     }
-    if (player.hp + 20 <= player.hpMax) {
-      player.hp += 20;
+    if (typeof spell.heal === 'number' && player.hp + spell.heal <= player.hpMax) {
+      player.hp += spell.heal;
       player.mp -= spell.cost;
       console.log('\n\u001b[36mYou recover 20 HP.\u001b[37m\n');
     } else {
@@ -113,19 +113,13 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
       player.mp -= spell.cost;
     }
   }
-  if (spell.name === 'Heal II') {
-    if (player.hp === player.hpMax) {
-      console.log('Your HP are already at maximum.');
+  if (spell.restore) {
+    if (player.mp === player.mpMax) {
+      console.log('Your MP are already at maximum.');
     }
-    if (player.hp + 50 <= player.hpMax) {
-      console.log('\n\u001b[36mYou recover 50 HP.\u001b[37m\n');
-      player.hp += 50;
-      player.mp -= spell.cost;
-    } else {
-      console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
-      player.hp = player.hpMax;
-      player.mp -= spell.cost;
-    }
+    console.log(`\n\u001b[36mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
+    player.mp = player.mpMax;
+    // player.mp -= spell.cost;
   }
 }
 
