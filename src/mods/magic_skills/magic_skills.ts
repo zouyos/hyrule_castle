@@ -58,7 +58,7 @@ function fight(player: Char, enemy: Char) {
     } else if (move === '1') {
       playerTurn(player, enemy);
     } else if (move === '3') {
-      const spellChoice = displaySpells(spells);
+      const spellChoice = displaySpells(player, spells);
       if (spellChoice === '0') {
         console.log('');
         continue mainLoop;

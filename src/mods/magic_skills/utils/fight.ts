@@ -54,30 +54,42 @@ export function playerTurn(player: Char, enemy: Char) {
   }
 }
 
-export function displaySpells(spells: Spell[]): string {
+export function displaySpells(player: Char, spells: Spell[]): string {
   console.log('\n==== Spells: ====\n');
   let displayedSpells: string = '';
   spells.forEach((spell, i) => {
     displayedSpells += `[${i + 1}] \u001b[1m${spell.name}\u001b[0m\n${spell.effect}\u001b[0m\u001b[37m\n`;
     i === spells.length - 1 && (displayedSpells += '[0] \u001b[1mBack\u001b[0m\u001b[37m\n');
   });
-  let spellChoice: string = rl.question(`${displayedSpells}\n`);
-  const choicesArr: string[] = ['0'];
+  const possibleChoices: string[] = ['0'];
   spells.forEach((spell) => {
-    choicesArr.push(spell.id.toString());
+    possibleChoices.push(spell.id.toString());
   });
-  while (!choicesArr.includes(spellChoice)) {
-    console.log('Please type a valid entree.');
-    spellChoice = rl.question(`${displayedSpells}`);
+  let spellIdStr: string = rl.question(`${displayedSpells}\n`);
+  let chosenSpell: Spell = spells[Number(spellIdStr) - 1]
+  let notEnoughMp: boolean = player.mp < chosenSpell.cost
+  let isHpAtMax: boolean = chosenSpell.heal !== undefined && player.hp === player.hpMax
+  let isMpAtMax: boolean = chosenSpell.restore !== undefined && player.mp === player.mpMax
+  while (!possibleChoices.includes(spellIdStr) || notEnoughMp || isHpAtMax || isMpAtMax) {
+    if (!possibleChoices.includes(spellIdStr)) {
+      console.log('Please type a valid entree.');
+    } else if (notEnoughMp) {
+      console.log(`\nYou have ${player.mp} MP and this spell costs ${chosenSpell.cost}. You cannot cast it.\n`);
+    } else if (isHpAtMax) {
+      console.log('\nYour HP are already at maximum.\n');
+    } else if (isMpAtMax) {
+      console.log('\nYour MP are already at maximum.\n');
+    }
+    spellIdStr = rl.question(`${displayedSpells}\n`);
+    chosenSpell = spells[Number(spellIdStr) - 1]
+    notEnoughMp = player.mp < chosenSpell.cost
+    isHpAtMax = chosenSpell.heal !== undefined && player.hp === player.hpMax
+    isMpAtMax = chosenSpell.restore !== undefined && player.mp === player.mpMax
   }
-  return spellChoice;
+  return spellIdStr;
 }
 
 export function castSpell(player: Char, spell: Spell, enemy: Char) {
-  if (player.mp < spell.cost) {
-    console.log(`\nYou have ${player.mp} MP and this spell costs ${spell.cost}.\n\nYou cannot cast it.\n`);
-    return;
-  }
   if (spell.dmg) {
     console.log(`\nYou cast a ${spell.name} on \u001b[31m${enemy.name}\u001b[37m!\n`);
     const dodge: boolean = calcDodge(player, enemy);
@@ -100,10 +112,6 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
     }
   }
   if (spell.heal) {
-    if (player.hp === player.hpMax) {
-      console.log('\nYour HP are already at maximum.\n');
-      return;
-    }
     if (typeof spell.heal === 'number' && player.hp + spell.heal <= player.hpMax) {
       player.hp += spell.heal;
       player.mp -= spell.cost;
@@ -115,11 +123,7 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
     }
   }
   if (spell.restore) {
-    if (player.mp === player.mpMax) {
-      console.log('\nYour MP are already at maximum.\n');
-      return;
-    }
-    console.log(`\n\u001b[36mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
+    console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
     player.mp = player.mpMax;
     // player.mp -= spell.cost;
   }
