@@ -1,0 +1,20 @@
+{
+  "name": "hyrule_castle",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "etna-eslint": "github:etna-alternance/ETNA-Linter",
+    "readline-sync": "^1.4.10"
+  },
+  "keywords": [],
+  "description": ""
+}

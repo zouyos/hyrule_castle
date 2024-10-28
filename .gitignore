@@ -1,0 +1,6 @@
+node_modules
+.eslintrc.json
+package-lock.json
+test.sh
+tsconfig.json
+**/*.js
