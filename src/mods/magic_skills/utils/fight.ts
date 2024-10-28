@@ -98,8 +98,8 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
       console.log(`\u001b[31m${enemy.name}\u001b[37m dodges your hit!\n`);
       player.mp -= spell.cost;
     } else {
-      const baseDamage = spell.dmg;
-      const calcPlayerDamage = Math.floor(baseDamage - (baseDamage * (enemy.res / 100)));
+      const baseDamage: number = spell.dmg;
+      const calcPlayerDamage: number = Math.floor(baseDamage - (baseDamage * (enemy.res / 100)));
       if (crit) {
         enemy.hp -= calcPlayerDamage * 2;
         player.mp -= spell.cost;
