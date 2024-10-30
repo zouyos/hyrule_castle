@@ -1,8 +1,8 @@
-import * as playersFromJson from './data/players.json';
-import * as enemiesFromJson from './data/enemies.json';
-import * as bossesFromJson from './data/bosses.json';
-import * as spellsFromJson from './data/spells.json';
-import { type Char, Spell } from './lib/types';
+import * as playersFromJson from '../data/players.json';
+import * as enemiesFromJson from '../data/enemies.json';
+import * as bossesFromJson from '../data/bosses.json';
+import * as spellsFromJson from '../data/spells.json';
+import { type Char, Spell } from '../lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
