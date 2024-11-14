@@ -130,6 +130,7 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
 }
 
 export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
+  protect && console.log('\nYou protect yourself.\n');
   console.log(`\u001b[31m${enemy.name}\u001b[37m attacks!\n`);
   const dodge: boolean = calcDodge(player, enemy);
   const crit: boolean = calcCrit(enemy);
@@ -147,7 +148,6 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
         console.log(`You lose ${calcEnemyDamage} HP.\n`);
       }
     } else {
-      console.log('You protect yourself.\n');
       if (crit) {
         player.hp -= calcEnemyDamage;
         console.log(`CRITICAL HIT! You lose ${calcEnemyDamage} HP.\n`);

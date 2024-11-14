@@ -2,7 +2,8 @@ import * as playersFromJson from '../../../data/players.json';
 import * as enemiesFromJson from '../../../data/enemies.json';
 import * as bossesFromJson from '../../../data/bosses.json';
 import * as inventoryFromJson from '../../../data/inventory.json';
-import { type Char, Item } from './lib/types';
+import * as spellsFromJson from '../../../data/spells.json';
+import { type Char, Item, Spell } from './lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
@@ -10,11 +11,16 @@ import {
   displayGauges, playerTurn, enemyTurn,
   displayInventory,
   useItem,
+  castSpell,
+  displaySpells,
+  dropRandomItem,
 } from './utils/fight';
 
 const rl = require('readline-sync');
 
 const items: Item[] = [...inventoryFromJson];
+
+const spells: Spell[] = [...spellsFromJson];
 
 const players: Char[] = [...playersFromJson].map((player) => ({
   ...player,
@@ -22,7 +28,8 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   hpMax: player.hp,
   mpMax: player.mp,
   coins: 12,
-  inventory: items,
+  inventory: [items[0], items[1]] as Item[],
+  spells
 }));
 
 let enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
@@ -48,12 +55,12 @@ function fight(player: Char, enemy: Char) {
     displayGauges(player);
     displayGauges(enemy);
     console.log('==== Options: ====\n');
-    let move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Escape\n\n');
-    while (!['1', '2', '3', '4'].includes(move)) {
+    let move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Magic Spells\n[5] Escape\n\n');
+    while (!['1', '2', '3', '4', '5'].includes(move)) {
       console.log('Please type a valid entree.');
-      move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Escape\n\n');
+      move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Magic Spells\n[5] Escape\n\n');
     }
-    if (move === '4') {
+    if (move === '5') {
       escape = true;
     } else if (move === '1') {
       playerTurn(player, enemy);
@@ -64,8 +71,15 @@ function fight(player: Char, enemy: Char) {
         continue mainLoop;
       }
       player.inventory && useItem(player, player.inventory[Number(itemChoice) - 1]);
+    } else if (move === '4') {
+      const spellChoice = displaySpells(player, spells);
+      if (spellChoice === '0') {
+        console.log('');
+        continue mainLoop;
+      }
+      castSpell(player, spells[Number(spellChoice) - 1], enemy);
     }
-    if (enemy.hp > 0 && move !== '4') {
+    if (enemy.hp > 0 && move !== '5') {
       if (move !== '2') {
         enemyTurn(player, enemy, false);
       } else {
@@ -77,6 +91,9 @@ function fight(player: Char, enemy: Char) {
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
     console.log(`You earned \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
+    const droppedItem = dropRandomItem(items)
+    player.inventory?.push(droppedItem)
+    console.log(`You looted a ${droppedItem.name}, you can check its stats using inventory menu.\n`);
   }
   if (escape) {
     console.log('\nYou escaped to the next floor.\n');
@@ -91,7 +108,7 @@ function fight(player: Char, enemy: Char) {
 
 function game() {
   const player: Char = pickRandomChar(players);
-  let nbFights: number | string = 10;
+  let nbFights: number = 10;
   console.log('\n\u001b[37m==== Welcome to Hyrule Castle Game ====\n');
   let newGame = rl.question('[1] New Game\n[2] Quit\n\n');
   while (!['1', '2'].includes(newGame)) {
@@ -100,12 +117,28 @@ function game() {
   }
   if (newGame === '1') {
     console.log('\nPlease select a number of fights:\n');
-    nbFights = rl.question('[10]\n[20]\n[50]\n[100]\n\n');
-    while (!['10', '20', '50', '100'].includes(nbFights.toString())) {
+    let userInputNbFights: string = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
+    while (!['1', '2', '3', '4'].includes(userInputNbFights)) {
       console.log('\nPlease type a valid entree\n');
-      nbFights = rl.question('[10]\n[20]\n[50]\n[100]\n\n');
+      userInputNbFights = rl.question('[1] 10\n[2] 20\n[3] 50\n[4] 100\n\n');
     }
-    nbFights = Number(nbFights);
+    switch (userInputNbFights) {
+      case '1':
+        nbFights = 10
+        break;
+      case '2':
+        nbFights = 20
+        break;
+      case '3':
+        nbFights = 50
+        break;
+      case '4':
+        nbFights = 100
+        break;
+      default:
+        nbFights = 10
+        break;
+    }
     enemies = pickRandomEnemies(enemies, nbFights);
     bosses = pickRandomBosses(bosses, nbFights);
     console.log('\nPlease select a difficulty:\n');
@@ -140,3 +173,4 @@ function game() {
 game();
 // si un item equipable est déjà présent, ne pas push (random un autre)
 // si un item donne un malus, s'arrêter à 0
+// quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)

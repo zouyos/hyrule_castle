@@ -26,7 +26,6 @@ export type Spell = {
   cost: number,
   dmg?: number,
   heal?: number | string,
-  restore?: number | string,
   effect: string,
   cooldown: number,
   race: string[],

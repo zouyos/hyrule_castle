@@ -24,11 +24,12 @@ export type Spell = {
   id: number,
   name: string,
   cost: number,
-  dmg: number,
+  dmg?: number,
+  heal?: number | string,
+  restore?: number | string,
   effect: string,
   cooldown: number,
   race: string[],
-  class: string[],
   rarity: number
 }
 
@@ -36,8 +37,10 @@ export type Item = {
   id: number,
   name: string,
   effect: string,
-  hpBoost: number,
-  mpBoost: number,
+  hpBoost?: number,
+  hpMaxBoost?: number,
+  mpBoost?: number,
+  mpMaxBoost?: number,
   strBoost: number,
   intBoost: number,
   defBoost: number,

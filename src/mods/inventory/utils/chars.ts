@@ -34,7 +34,6 @@ export function pickRandomChar(chars: Char[]) {
       pickableChars.push({ ...char });
     }
   }
-
   return pickableChars[Math.floor(Math.random() * pickableChars.length)];
 }
 
