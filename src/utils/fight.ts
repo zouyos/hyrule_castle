@@ -44,12 +44,13 @@ export function playerTurn(player: Char, enemy: Char) {
   } else {
     const playerBaseDamage = player.str;
     const calcPlayerDamage = Math.floor(playerBaseDamage - (playerBaseDamage * (enemy.def / 100)));
+    const calcPlayerCritDamage = calcPlayerDamage * 2;
     if (crit) {
-      enemy.hp -= calcPlayerDamage * 2;
-      console.log(`CRITICAL HIT! \u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage * 2} HP.\n`);
+      console.log(`CRITICAL HIT! \u001b[31m${enemy.name}\u001b[37m loses ${enemy.hp >= calcPlayerCritDamage ? calcPlayerCritDamage : enemy.hp} HP.\n`);
+      enemy.hp - calcPlayerCritDamage >= 0 ? enemy.hp -= calcPlayerCritDamage : enemy.hp = 0;
     } else {
-      enemy.hp -= calcPlayerDamage;
-      console.log(`\u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage} HP.\n`);
+      console.log(`\u001b[31m${enemy.name}\u001b[37m loses ${enemy.hp >= calcPlayerDamage ? calcPlayerDamage : enemy.hp} HP.\n`);
+      enemy.hp - calcPlayerDamage >= 0 ? enemy.hp -= calcPlayerDamage : enemy.hp = 0;
     }
   }
 }
@@ -75,17 +76,15 @@ export function displayInventory(inventory: Item[]): string {
 
 export function useItem(player: Char, item: Item) {
   if (item.usable) {
-    const hpBoost: boolean = !!item.hpBoost && (item.hpBoost > 0)
+    const hpBoost: boolean = !!item.hpBoost && (item.hpBoost > 0);
     if (hpBoost) {
       if (player.hp === player.hpMax) {
         console.log('\nYour HP are already at maximum.\n');
-        return false
+        return false;
       }
-    } else {
-      if (player.mp === player.mpMax) {
-        console.log('\nYour MP are already at maximum.\n');
-        return false
-      }
+    } else if (player.mp === player.mpMax) {
+      console.log('\nYour MP are already at maximum.\n');
+      return false;
     }
     const baseBoost: number = item.hpBoost && item.hpBoost > 0 ? item.hpBoost : item.mpBoost ?? 0;
     console.log(`\nYou use a ${item.name}.\n`);
@@ -99,16 +98,14 @@ export function useItem(player: Char, item: Item) {
         player.hp = player.hpMax;
         // item - 1
       }
+    } else if (player.mp + baseBoost <= player.mpMax) {
+      player.mp += baseBoost;
+      // item - 1
+      console.log(`\n\u001b[34mYou recover ${baseBoost} MP.\u001b[37m\n`);
     } else {
-      if (player.mp + baseBoost <= player.mpMax) {
-        player.mp += baseBoost;
-        // item - 1
-        console.log(`\n\u001b[34mYou recover ${baseBoost} MP.\u001b[37m\n`);
-      } else {
-        console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
-        player.mp = player.mpMax;
-        // item - 1
-      }
+      console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
+      player.mp = player.mpMax;
+      // item - 1
     }
   }
 
@@ -119,11 +116,11 @@ export function useItem(player: Char, item: Item) {
         Object.entries(player).forEach(([pKey, pVal]) => {
           if (typeof pVal === 'number' && iKey.includes(pKey)) {
             console.log(`${pKey} +${iVal}`);
-            player[pKey] += iVal
+            player[pKey] += iVal;
           }
-        })
+        });
       }
-    })
+    });
     console.log();
   }
 }
@@ -141,12 +138,12 @@ export function displaySpells(player: Char, spells: Spell[]): string {
   });
   let spellIdStr: string = rl.question(`${displayedSpells}\n`);
   if (spellIdStr === '0') {
-    return '0'
+    return '0';
   }
-  let chosenSpell: Spell = spells[Number(spellIdStr) - 1]
-  let notEnoughMp: boolean = player.mp < chosenSpell.cost
-  let isHpAtMax: boolean = chosenSpell.heal !== undefined && player.hp === player.hpMax
-  let isMpAtMax: boolean = chosenSpell.restore !== undefined && player.mp === player.mpMax
+  let chosenSpell: Spell = spells[Number(spellIdStr) - 1];
+  let notEnoughMp: boolean = player.mp < chosenSpell.cost;
+  let isHpAtMax: boolean = chosenSpell.heal !== undefined && player.hp === player.hpMax;
+  let isMpAtMax: boolean = chosenSpell.restore !== undefined && player.mp === player.mpMax;
   while (!possibleChoices.includes(spellIdStr) || notEnoughMp || isHpAtMax || isMpAtMax) {
     if (!possibleChoices.includes(spellIdStr)) {
       console.log('Please type a valid entree.');
@@ -159,12 +156,12 @@ export function displaySpells(player: Char, spells: Spell[]): string {
     }
     spellIdStr = rl.question(`${displayedSpells}\n`);
     if (spellIdStr === '0') {
-      return '0'
+      return '0';
     }
-    chosenSpell = spells[Number(spellIdStr) - 1]
-    notEnoughMp = player.mp < chosenSpell.cost
-    isHpAtMax = chosenSpell.heal !== undefined && player.hp === player.hpMax
-    isMpAtMax = chosenSpell.restore !== undefined && player.mp === player.mpMax
+    chosenSpell = spells[Number(spellIdStr) - 1];
+    notEnoughMp = player.mp < chosenSpell.cost;
+    isHpAtMax = chosenSpell.heal !== undefined && player.hp === player.hpMax;
+    isMpAtMax = chosenSpell.restore !== undefined && player.mp === player.mpMax;
   }
   return spellIdStr;
 }
@@ -180,14 +177,15 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
     } else {
       const baseDamage: number = spell.dmg;
       const calcPlayerDamage: number = Math.floor(baseDamage - (baseDamage * (enemy.res / 100)));
+      const calcPlayerCritDamage = calcPlayerDamage * 2;
       if (crit) {
-        enemy.hp -= calcPlayerDamage * 2;
         player.mp -= spell.cost;
-        console.log(`CRITICAL HIT! \u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage * 2} HP.\n`);
+        console.log(`CRITICAL HIT! \u001b[31m${enemy.name}\u001b[37m loses ${enemy.hp >= calcPlayerCritDamage ? calcPlayerCritDamage : enemy.hp} HP.\n`);
+        enemy.hp - calcPlayerCritDamage >= 0 ? enemy.hp -= calcPlayerCritDamage : enemy.hp = 0;
       } else {
-        enemy.hp -= calcPlayerDamage;
         player.mp -= spell.cost;
-        console.log(`\u001b[31m${enemy.name}\u001b[37m loses ${calcPlayerDamage} HP.\n`);
+        console.log(`\u001b[31m${enemy.name}\u001b[37m loses ${enemy.hp >= calcPlayerDamage ? calcPlayerDamage : enemy.hp} HP.\n`);
+        enemy.hp - calcPlayerDamage >= 0 ? enemy.hp -= calcPlayerDamage : enemy.hp = 0;
       }
     }
   }
@@ -206,7 +204,7 @@ export function castSpell(player: Char, spell: Spell, enemy: Char) {
 
 export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
   protect && console.log('\nYou protect yourself.\n');
-  console.log(`\u001b[31m${enemy.name}\u001b[37m attacks!\n`)
+  console.log(`\u001b[31m${enemy.name}\u001b[37m attacks!\n`);
   const dodge: boolean = calcDodge(player, enemy);
   const crit: boolean = calcCrit(enemy);
   if (dodge) {
@@ -222,14 +220,12 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
         player.hp -= calcEnemyDamage;
         console.log(`You lose ${calcEnemyDamage} HP.\n`);
       }
+    } else if (crit) {
+      player.hp -= calcEnemyDamage;
+      console.log(`CRITICAL HIT! You lose ${calcEnemyDamage} HP.\n`);
     } else {
-      if (crit) {
-        player.hp -= calcEnemyDamage;
-        console.log(`CRITICAL HIT! You lose ${calcEnemyDamage} HP.\n`);
-      } else {
-        player.hp -= Math.floor(calcEnemyDamage / 2);
-        console.log(`You lose ${Math.floor(calcEnemyDamage / 2)} HP.\n`);
-      }
+      player.hp -= Math.floor(calcEnemyDamage / 2);
+      console.log(`You lose ${Math.floor(calcEnemyDamage / 2)} HP.\n`);
     }
   }
 }

@@ -29,7 +29,7 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   mpMax: player.mp,
   coins: 12,
   inventory: [items[0], items[1]] as Item[],
-  spells
+  spells,
 }));
 
 let enemies: Char[] = [...enemiesFromJson].map((enemy) => ({
@@ -51,7 +51,7 @@ function fight(player: Char, enemy: Char) {
   if (enemy.spd > player.spd) {
     enemyTurn(player, enemy, false);
   }
-  mainLoop: while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
+  while (!(enemy.hp <= 0 || player.hp <= 0 || escape)) {
     displayGauges(player);
     displayGauges(enemy);
     console.log('==== Options: ====\n');
@@ -68,14 +68,14 @@ function fight(player: Char, enemy: Char) {
       const itemChoice = displayInventory(player.inventory);
       if (itemChoice === '0') {
         console.log('');
-        continue mainLoop;
+        continue;
       }
       player.inventory && useItem(player, player.inventory[Number(itemChoice) - 1]);
     } else if (move === '4') {
       const spellChoice = displaySpells(player, spells);
       if (spellChoice === '0') {
         console.log('');
-        continue mainLoop;
+        continue;
       }
       castSpell(player, spells[Number(spellChoice) - 1], enemy);
     }
@@ -91,8 +91,8 @@ function fight(player: Char, enemy: Char) {
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
     console.log(`You earned \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
-    const droppedItem = dropRandomItem(items)
-    player.inventory?.push(droppedItem)
+    const droppedItem = dropRandomItem(items);
+    player.inventory?.push(droppedItem);
     console.log(`You looted a ${droppedItem.name}, you can check its stats using inventory menu.\n`);
   }
   if (escape) {
@@ -124,19 +124,19 @@ function game() {
     }
     switch (userInputNbFights) {
       case '1':
-        nbFights = 10
+        nbFights = 10;
         break;
       case '2':
-        nbFights = 20
+        nbFights = 20;
         break;
       case '3':
-        nbFights = 50
+        nbFights = 50;
         break;
       case '4':
-        nbFights = 100
+        nbFights = 100;
         break;
       default:
-        nbFights = 10
+        nbFights = 10;
         break;
     }
     enemies = pickRandomEnemies(enemies, nbFights);
@@ -171,6 +171,10 @@ function game() {
 }
 
 game();
+
+// TODO
 // si un item equipable est déjà présent, ne pas push (random un autre)
 // si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
+// cumuler les items cumulables sur un même choix d'input (ex: potions x10)
+// items - 1 quand on use

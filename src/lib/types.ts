@@ -31,7 +31,7 @@ export type Spell = {
   cooldown: number,
   race: string[],
   rarity: number
-}
+};
 
 export type Item = {
   id: number,
@@ -52,4 +52,4 @@ export type Item = {
   rarity: number,
   usable?: boolean,
   equipable?: boolean
-}
+};

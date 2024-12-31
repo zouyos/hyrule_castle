@@ -10,7 +10,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "^20.16.13"
+    "@types/node": "^20.16.13",
+    "eslint-plugin-import": "^2.31.0"
   },
   "dependencies": {
     "@types/node": "^20.16.13",
