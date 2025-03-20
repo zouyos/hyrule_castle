@@ -173,8 +173,9 @@ function game() {
 game();
 
 // TODO
+// cumuler les items cumulables sur un même choix d'input (ex: potions x10)
 // si un item equipable est déjà présent, ne pas push (random un autre)
+// bug: quand un item donne des HP Max ou MP Max, les HP s'incrémentent aussi
 // si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
-// cumuler les items cumulables sur un même choix d'input (ex: potions x10)
 // items - 1 quand on use

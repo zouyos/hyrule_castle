@@ -51,5 +51,6 @@ export type Item = {
   class: string[],
   rarity: number,
   usable?: boolean,
+  quantity: number
   equipable?: boolean
 };

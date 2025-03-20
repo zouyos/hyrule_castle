@@ -1,4 +1,6 @@
 import { type Char, Item, Spell } from '../lib/types';
+import * as inventoryFromJson from '../../data/inventory.json';
+const items: Item[] = [...inventoryFromJson];
 
 const rl = require('readline-sync');
 
@@ -57,22 +59,32 @@ export function playerTurn(player: Char, enemy: Char) {
 
 export function displayInventory(inventory: Item[]): string {
   console.log('\n==== Inventory: ====\n');
+
+  // Filtrer les objets avec une quantité supérieure à 0
+  const filteredInventory = inventory.filter(item => item.quantity > 0);
+
   let displayedItems: string = '';
-  inventory.forEach((item, i) => {
-    displayedItems += `[${i + 1}] \u001b[1m${item.name}\u001b[0m\n${item.effect}\u001b[0m\u001b[37m\n\n`;
-    i === inventory.length - 1 && (displayedItems += '[0] \u001b[1mBack\u001b[0m\u001b[37m\n');
+  filteredInventory.forEach((item, i) => {
+      displayedItems += `[${i + 1}] \u001b[1m${item.name}\u001b[0m\n${item.effect}\u001b[0m\u001b[37m x${item.quantity}\u001b[0m\u001b[37m\n\n`;
   });
+
+  displayedItems += '[0] \u001b[1mBack\u001b[0m\u001b[37m\n';
+
   let itemChoice: string = rl.question(`${displayedItems}\n`);
   const choicesArr: string[] = ['0'];
-  inventory.forEach((item, i) => {
+
+  filteredInventory.forEach((_, i) => {
     choicesArr.push((i + 1).toString());
   });
+
   while (!choicesArr.includes(itemChoice)) {
     console.log('\nPlease type a valid entree.\n');
     itemChoice = rl.question(`${displayedItems}\n`);
   }
+
   return itemChoice;
 }
+
 
 export function useItem(player: Char, item: Item) {
   if (item.usable) {
@@ -91,21 +103,21 @@ export function useItem(player: Char, item: Item) {
     if (hpBoost) {
       if (player.hp + baseBoost <= player.hpMax) {
         player.hp += baseBoost;
-        // item - 1
+        item.quantity -= 1
         console.log(`\n\u001b[36mYou recover ${baseBoost} HP.\u001b[37m\n`);
       } else {
         console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
         player.hp = player.hpMax;
-        // item - 1
+        item.quantity -= 1
       }
     } else if (player.mp + baseBoost <= player.mpMax) {
       player.mp += baseBoost;
-      // item - 1
+      item.quantity -= 1
       console.log(`\n\u001b[34mYou recover ${baseBoost} MP.\u001b[37m\n`);
     } else {
       console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
       player.mp = player.mpMax;
-      // item - 1
+      item.quantity -= 1
     }
   }
 
@@ -255,5 +267,7 @@ export function dropRandomItem(items: Item[]) {
       dropableItems.push({ ...item });
     }
   }
-  return dropableItems[Math.floor(Math.random() * dropableItems.length)];
+  const dropedItem = dropableItems[Math.floor(Math.random() * dropableItems.length)];
+  dropedItem.quantity += 1
+  return dropedItem
 }
