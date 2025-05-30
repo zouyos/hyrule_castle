@@ -60,7 +60,6 @@ export function playerTurn(player: Char, enemy: Char) {
 export function displayInventory(inventory: Item[]): string {
   console.log('\n==== Inventory: ====\n');
 
-  // Filtrer les objets avec une quantité supérieure à 0
   const filteredInventory = inventory.filter(item => item.quantity > 0);
 
   let displayedItems: string = '';
@@ -267,7 +266,8 @@ export function dropRandomItem(items: Item[]) {
       dropableItems.push({ ...item });
     }
   }
-  const dropedItem = dropableItems[Math.floor(Math.random() * dropableItems.length)];
-  dropedItem.quantity += 1
-  return dropedItem
+  const randomIndex = Math.floor(Math.random() * items.length);
+  const itemCopy = { ...items[randomIndex] };
+  itemCopy.quantity = 1;
+  return itemCopy;
 }
