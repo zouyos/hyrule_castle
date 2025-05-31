@@ -91,7 +91,7 @@ function fight(player: Char, enemy: Char) {
     console.log(`${enemy.name} DEFEATED!\n`);
     player.coins && (player.coins += 1);
     console.log(`You earned \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
-    const droppedItem = dropRandomItem(items);
+    const droppedItem = dropRandomItem(items, { inventory: player.inventory ?? [] });
 
     const existingItem = player.inventory?.find(item => item.name === droppedItem.name);
 
@@ -182,8 +182,5 @@ function game() {
 game();
 
 // TODO
-// si un item equipable est déjà présent, ne pas push (random un autre)
-// bug: quand un item donne des HP Max ou MP Max, les HP s'incrémentent aussi
 // si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
-// items - 1 quand on use

@@ -241,7 +241,7 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
   }
 }
 
-export function dropRandomItem(items: Item[]) {
+export function dropRandomItem(items: Item[], player: { inventory: Item[] }) {
   const rarities = [
     { idx: 1, pct: 50 },
     { idx: 2, pct: 30 },
@@ -249,25 +249,42 @@ export function dropRandomItem(items: Item[]) {
     { idx: 4, pct: 4 },
     { idx: 5, pct: 1 },
   ];
-  const randomNumber = Math.floor(Math.random() * 100) + 1;
 
-  let result: number | undefined;
-  let acc = 0;
+  const maxAttempts = 100;
+  let attempts = 0;
 
-  rarities.forEach((rarity) => {
-    if (result === undefined && randomNumber > 100 - rarity.pct - acc) result = rarity.idx;
-    acc += rarity.pct;
-  });
+  while (attempts < maxAttempts) {
+    const randomNumber = Math.floor(Math.random() * 100) + 1;
 
-  const dropableItems: Item[] = [];
+    let result: number | undefined;
+    let acc = 0;
 
-  for (const item of items) {
-    if (item.rarity === result) {
-      dropableItems.push({ ...item });
+    rarities.forEach((rarity) => {
+      if (result === undefined && randomNumber > 100 - rarity.pct - acc) result = rarity.idx;
+      acc += rarity.pct;
+    });
+
+    const droppableItems: Item[] = items.filter(item => item.rarity === result);
+
+    if (droppableItems.length === 0) continue;
+
+    const randomIndex = Math.floor(Math.random() * droppableItems.length);
+    const itemCopy = { ...droppableItems[randomIndex] };
+    itemCopy.quantity = 1;
+
+    const isDuplicateEquipable =
+      itemCopy.equipable &&
+      player.inventory.some(invItem => invItem.name === itemCopy.name);
+
+    if (!isDuplicateEquipable) {
+      return itemCopy;
     }
+
+    attempts++;
   }
-  const randomIndex = Math.floor(Math.random() * items.length);
-  const itemCopy = { ...items[randomIndex] };
-  itemCopy.quantity = 1;
-  return itemCopy;
+
+  // Fallback in case no suitable item is found
+  return { ...items[0], quantity: 1 };
 }
+
+
