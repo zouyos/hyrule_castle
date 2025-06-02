@@ -184,3 +184,4 @@ game();
 // TODO
 // si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
+// bug: quand on perd un item usable (arrivé à 0) la ref reste

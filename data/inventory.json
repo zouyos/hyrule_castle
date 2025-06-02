@@ -15,9 +15,9 @@
     "class":[],
     "rarity":0,
     "equipable": true,
-    "equiped": true,
-    "quantity": 1
-
+    "equipped": true,
+    "quantity": 1,
+    "slot": "weapon"
   },
   {
     "id":2,
@@ -35,9 +35,9 @@
     "class":[],
     "rarity":0,
     "equipable": true,
-    "equiped": true,
-    "quantity": 1
-
+    "equipped": true,
+    "quantity": 1,
+    "slot": "shield"
   },
   {
     "id":3,
@@ -55,9 +55,9 @@
     "class":[],
     "rarity":2,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
-
+    "equipped": false,
+    "quantity": 0,
+    "slot": "weapon"
   },
   {
     "id":4,
@@ -75,8 +75,9 @@
     "class":[],
     "rarity":3,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
+    "equipped": false,
+    "quantity": 0,
+    "slot": "weapon"
   },
   {
     "id":5,
@@ -94,8 +95,9 @@
     "class":[],
     "rarity":5,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
+    "equipped": false,
+    "quantity": 0,
+    "slot": "weapon"
   },
   {
     "id":6,
@@ -113,8 +115,9 @@
     "class":[],
     "rarity":2,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
+    "equipped": false,
+    "quantity": 0,
+    "slot": "shield"
   },
   {
     "id":7,
@@ -132,8 +135,9 @@
     "class":[],
     "rarity":3,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
+    "equipped": false,
+    "quantity": 0,
+    "slot": "shield"
   },
   {
     "id":8,
@@ -151,8 +155,9 @@
     "class":[],
     "rarity":5,
     "equipable": true,
-    "equiped": false,
-    "quantity": 0
+    "equipped": false,
+    "quantity": 0,
+    "slot": "shield"
   },
   {
     "id":9,
