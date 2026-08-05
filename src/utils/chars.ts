@@ -10,6 +10,10 @@ export function updateChars(chars: Char[], multiplier: number) {
 }
 
 export function pickRandomChar(chars: Char[]) {
+  if (chars.length === 0) {
+    throw new Error("Array is empty");
+  }
+
   const rarities = [
     { idx: 1, pct: 50 },
     { idx: 2, pct: 30 },
@@ -34,7 +38,7 @@ export function pickRandomChar(chars: Char[]) {
       pickableChars.push({ ...char });
     }
   }
-  return pickableChars[Math.floor(Math.random() * pickableChars.length)];
+  return pickableChars[Math.floor(Math.random() * pickableChars.length)]!;
 }
 
 export function pickRandomEnemies(arr: Char[], multiplier: number) {

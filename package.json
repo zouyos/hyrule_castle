@@ -3,18 +3,21 @@
   "version": "1.3.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/main.js",
+    "dev": "tsx src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@types/node": "^20.16.13",
+    "@types/node": "^20.19.43",
+    "@types/readline-sync": "^1.4.8",
     "eslint-plugin-import": "^2.31.0"
   },
   "dependencies": {
-    "@types/node": "^20.16.13",
     "axios": "^1.7.7",
     "etna-eslint": "github:etna-alternance/ETNA-Linter",
     "readline-sync": "^1.4.10"

@@ -1,8 +1,8 @@
-import * as playersFromJson from '../data/players.json';
-import * as enemiesFromJson from '../data/enemies.json';
-import * as bossesFromJson from '../data/bosses.json';
-import * as inventoryFromJson from '../data/inventory.json';
-import * as spellsFromJson from '../data/spells.json';
+import playersFromJson from '../data/players.json';
+import enemiesFromJson from '../data/enemies.json';
+import bossesFromJson from '../data/bosses.json';
+import inventoryFromJson from '../data/inventory.json';
+import spellsFromJson from '../data/spells.json';
 import { type Char, Item, Spell } from './lib/types';
 import {
   updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
@@ -15,8 +15,9 @@ import {
   displaySpells,
   dropRandomItem,
 } from './utils/fight';
+import readlineSync from 'readline-sync';
 
-const rl = require('readline-sync');
+const rl = readlineSync;
 
 const items: Item[] = [...inventoryFromJson];
 
@@ -70,14 +71,20 @@ function fight(player: Char, enemy: Char) {
         console.log('');
         continue;
       }
-      player.inventory && useItem(player, player.inventory[Number(itemChoice) - 1]);
+      const item = player.inventory?.[Number(itemChoice) - 1];
+      if (player.inventory && item) {
+        useItem(player, item);
+      }
     } else if (move === '4') {
       const spellChoice = displaySpells(player, spells);
       if (spellChoice === '0') {
         console.log('');
         continue;
       }
-      castSpell(player, spells[Number(spellChoice) - 1], enemy);
+      const spell = spells[Number(spellChoice) - 1];
+      if (spell) {
+        castSpell(player, spell, enemy);
+      }
     }
     if (enemy.hp > 0 && move !== '5') {
       if (move !== '2') {
@@ -106,7 +113,9 @@ function fight(player: Char, enemy: Char) {
   }
   if (escape) {
     console.log('\nYou escaped to the next floor.\n');
-    player.coins && (player.coins -= 1);
+    if (player.coins !== undefined) {
+      player.coins -= 1;
+    }
     console.log(`You lost \u001b[33m1\u001b[37m coin, you have now \u001b[33m${player.coins}\u001b[37m coins.\n`);
   }
   if (player.hp <= 0) {
@@ -116,7 +125,7 @@ function fight(player: Char, enemy: Char) {
 }
 
 function game() {
-  const player: Char = pickRandomChar(players);
+  const player: Char = pickRandomChar(players)!;
   let nbFights: number = 10;
   console.log('\n\u001b[37m==== Welcome to Hyrule Castle Game ====\n');
   let newGame = rl.question('[1] New Game\n[2] Quit\n\n');
@@ -167,10 +176,10 @@ function game() {
     for (let i = 1; i <= nbFights; i += 1) {
       if (!(i % 10 === 0)) {
         console.log(`\u001b[33m==== FLOOR ${i} ====\u001b[37m\n`);
-        fight(player, enemies[i]);
+        fight(player, enemies[i - 1]!);
       } else {
         console.log('\u001b[35m==== BOSS FLOOR ====\u001b[37m\n');
-        fight(player, bosses[(i / 10) - 1]);
+        fight(player, bosses[(i / 10) - 1]!);
       }
     }
     console.log('Congratulations, you saved Hyrule from Evil.\n');
@@ -182,6 +191,7 @@ function game() {
 game();
 
 // TODO
+// empêcher escape si coins = 0
 // si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
 // bug: quand on perd un item usable (arrivé à 0) la ref reste

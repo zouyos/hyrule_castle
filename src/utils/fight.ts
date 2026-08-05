@@ -1,8 +1,7 @@
 import { type Char, Item, Spell } from '../lib/types';
-import * as inventoryFromJson from '../../data/inventory.json';
-const items: Item[] = [...inventoryFromJson];
+import readlineSync from 'readline-sync';
 
-const rl = require('readline-sync');
+const rl = readlineSync;
 
 export function displayGauges(char: Char) {
   const hpArray: string[] = Array(char.hpMax).fill('I');
@@ -127,7 +126,7 @@ export function useItem(player: Char, item: Item) {
         Object.entries(player).forEach(([pKey, pVal]) => {
           if (typeof pVal === 'number' && iKey.includes(pKey)) {
             console.log(`${pKey} +${iVal}`);
-            player[pKey] += iVal;
+            (player[pKey as keyof Char] as number) += iVal;
           }
         });
       }
@@ -151,7 +150,7 @@ export function displaySpells(player: Char, spells: Spell[]): string {
   if (spellIdStr === '0') {
     return '0';
   }
-  let chosenSpell: Spell = spells[Number(spellIdStr) - 1];
+  let chosenSpell: Spell = spells[Number(spellIdStr) - 1]!;
   let notEnoughMp: boolean = player.mp < chosenSpell.cost;
   let isHpAtMax: boolean = chosenSpell.heal !== undefined && player.hp === player.hpMax;
   let isMpAtMax: boolean = chosenSpell.restore !== undefined && player.mp === player.mpMax;
@@ -169,7 +168,7 @@ export function displaySpells(player: Char, spells: Spell[]): string {
     if (spellIdStr === '0') {
       return '0';
     }
-    chosenSpell = spells[Number(spellIdStr) - 1];
+    chosenSpell = spells[Number(spellIdStr) - 1]!;
     notEnoughMp = player.mp < chosenSpell.cost;
     isHpAtMax = chosenSpell.heal !== undefined && player.hp === player.hpMax;
     isMpAtMax = chosenSpell.restore !== undefined && player.mp === player.mpMax;
@@ -241,7 +240,7 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
   }
 }
 
-export function dropRandomItem(items: Item[], player: { inventory: Item[] }) {
+export function dropRandomItem(items: Item[], player: { inventory: Item[] }): Item {
   const rarities = [
     { idx: 1, pct: 50 },
     { idx: 2, pct: 30 },
@@ -269,8 +268,16 @@ export function dropRandomItem(items: Item[], player: { inventory: Item[] }) {
     if (droppableItems.length === 0) continue;
 
     const randomIndex = Math.floor(Math.random() * droppableItems.length);
-    const itemCopy = { ...droppableItems[randomIndex] };
-    itemCopy.quantity = 1;
+    const item = droppableItems[randomIndex];
+
+    if (!item) {
+      continue;
+    }
+
+    const itemCopy: Item = {
+      ...item,
+      quantity: 1,
+    };
 
     const isDuplicateEquipable =
       itemCopy.equipable &&
@@ -283,8 +290,14 @@ export function dropRandomItem(items: Item[], player: { inventory: Item[] }) {
     attempts++;
   }
 
-  // Fallback in case no suitable item is found
-  return { ...items[0], quantity: 1 };
+  const fallback = items[0];
+  if (!fallback) {
+    throw new Error("No items available");
+  }
+  return {
+    ...fallback,
+    quantity: 1,
+  };
 }
 
 
