@@ -193,5 +193,5 @@ game();
 // TODO
 // empêcher escape si coins = 0
 // si un item donne un malus, s'arrêter à 0
-// quand on equipe un objet, perdre les stats de l'ancien objet du même type (ex: changement de bouclier)
+// quand on equipe un objet, perdre les stats de l'objet qu'il remplace
 // bug: quand on perd un item usable (arrivé à 0) la ref reste
