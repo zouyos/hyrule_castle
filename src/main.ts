@@ -149,12 +149,15 @@ function game() {
         break;
       case '2':
         nbFights = 20;
+        player.coins = 6
         break;
       case '3':
         nbFights = 50;
+        player.coins = 15
         break;
       case '4':
         nbFights = 100;
+        player.coins = 30
         break;
       default:
         nbFights = 10;
@@ -194,6 +197,6 @@ function game() {
 game();
 
 // TODO
-// quand on equipe un objet, perdre les stats de l'objet qu'il remplace
-// bug: quand on perd un item usable (arrivé à 0) l'item disparaît mais
-// reste référencé au choix d'entrée auquel il était associé
+// quand on equipe un objet, perdre les stats de l'objet qu'il remplace (utiliser la propriété 'slot' de player)
+// bug: quand on perd un item usable (arrivé à 0) l'item disparaît mais reste référencé au choix d'entrée auquel il était associé
+// ajouter un système de recovery de mp pour rentabiliser l'option défense
