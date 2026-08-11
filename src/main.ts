@@ -5,7 +5,7 @@ import inventoryFromJson from '../data/inventory.json';
 import spellsFromJson from '../data/spells.json';
 import { type Char, Item, Spell } from './lib/types';
 import {
-  updateChars, pickRandomChar, pickRandomEnemies, pickRandomBosses,
+  updateEnnemies, pickRandomChar, pickRandomEnemies, pickRandomBosses,
 } from './utils/chars';
 import {
   displayGauges, playerTurn, enemyTurn,
@@ -19,7 +19,7 @@ import readlineSync from 'readline-sync';
 
 const rl = readlineSync;
 
-const items: Item[] = [...inventoryFromJson];
+const items = inventoryFromJson as Item[];
 
 const spells: Spell[] = [...spellsFromJson];
 
@@ -28,7 +28,7 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   isPlayer: true,
   hpMax: player.hp,
   mpMax: player.mp,
-  coins: 12,
+  coins: 3,
   inventory: [items[0], items[1]] as Item[],
   spells,
 }));
@@ -58,17 +58,20 @@ function fight(player: Char, enemy: Char) {
     console.log('==== Options: ====\n');
     let move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Magic Spells\n[5] Escape\n\n');
     while (!['1', '2', '3', '4', '5'].includes(move)) {
-      console.log('Please type a valid entree.');
+      console.log();
+      console.log('Please type a valid entree.\n');
       move = rl.question('[1] Attack\n[2] Protect\n[3] Inventory\n[4] Magic Spells\n[5] Escape\n\n');
     }
     if (move === '5') {
-      escape = true;
+      console.log();
+      player.coins && player.coins > 0 ? escape = true : console.log('Not enough coins to escape\n');
+      continue;
     } else if (move === '1') {
       playerTurn(player, enemy);
     } else if (move === '3' && player.inventory) {
       const itemChoice = displayInventory(player.inventory);
       if (itemChoice === '0') {
-        console.log('');
+        console.log();
         continue;
       }
       const item = player.inventory?.[Number(itemChoice) - 1];
@@ -166,11 +169,11 @@ function game() {
       difficulty = rl.question('[1] Normal\n[2] Difficult\n[3] Asian\n\n');
     }
     if (difficulty === '2') {
-      enemies = updateChars(enemies, 1.5);
-      bosses = updateChars(bosses, 1.5);
+      enemies = updateEnnemies(enemies, 1.5);
+      bosses = updateEnnemies(bosses, 1.5);
     } else if (difficulty === '3') {
-      enemies = updateChars(enemies, 2);
-      bosses = updateChars(bosses, 2);
+      enemies = updateEnnemies(enemies, 2);
+      bosses = updateEnnemies(bosses, 2);
     }
     console.log('\n==== You enter Hyrule Castle ====\n');
     for (let i = 1; i <= nbFights; i += 1) {
@@ -191,7 +194,6 @@ function game() {
 game();
 
 // TODO
-// empêcher escape si coins = 0
-// si un item donne un malus, s'arrêter à 0
 // quand on equipe un objet, perdre les stats de l'objet qu'il remplace
-// bug: quand on perd un item usable (arrivé à 0) la ref reste
+// bug: quand on perd un item usable (arrivé à 0) l'item disparaît mais
+// reste référencé au choix d'entrée auquel il était associé

@@ -51,6 +51,8 @@ export type Item = {
   class: string[],
   rarity: number,
   usable?: boolean,
-  quantity: number
-  equipable?: boolean
+  quantity: number,
+  equipable?: boolean,
+  equipped?: boolean,
+  slot?: 'weapon' | 'shield'
 };

@@ -97,7 +97,7 @@ export function useItem(player: Char, item: Item) {
       return false;
     }
     const baseBoost: number = item.hpBoost && item.hpBoost > 0 ? item.hpBoost : item.mpBoost ?? 0;
-    console.log(`\nYou use a ${item.name}.\n`);
+    console.log(`\nYou use a ${item.name}.`);
     if (hpBoost) {
       if (player.hp + baseBoost <= player.hpMax) {
         player.hp += baseBoost;
@@ -121,12 +121,13 @@ export function useItem(player: Char, item: Item) {
 
   if (item.equipable) {
     console.log();
+    console.log(`${item.name} equipped\n`);
     Object.entries(item).forEach(([iKey, iVal]) => {
-      if (typeof iVal === 'number' && iKey.includes('Boost') && iVal > 0) {
+      if (typeof iVal === 'number' && iKey.includes('Boost')) {
         Object.entries(player).forEach(([pKey, pVal]) => {
           if (typeof pVal === 'number' && iKey.includes(pKey)) {
             console.log(`${pKey} +${iVal}`);
-            (player[pKey as keyof Char] as number) += iVal;
+            (player[pKey as keyof Char] as number) = Math.max(0, (player[pKey as keyof Char] as number) + iVal);
           }
         });
       }
@@ -290,13 +291,15 @@ export function dropRandomItem(items: Item[], player: { inventory: Item[] }): It
     attempts++;
   }
 
-  const fallback = items[0];
+  const fallback = items.find((item) => item.name === 'Potion')
+
   if (!fallback) {
-    throw new Error("No items available");
+    throw new Error('No valid item available');
   }
+
   return {
-    ...fallback,
-    quantity: 1,
+  ...fallback,
+  quantity: 1,
   };
 }
 

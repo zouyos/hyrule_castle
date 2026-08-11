@@ -1,10 +1,10 @@
 import { Char } from '../lib/types';
 
-export function updateChars(chars: Char[], multiplier: number) {
+export function updateEnnemies(chars: Char[], multiplier: number) {
   return chars.map((char) => Object.fromEntries(
     Object.entries(char).map(([key, val]) => [
       key,
-      typeof val === 'number' ? Math.floor(val * multiplier) : val,
+      typeof val === 'number' && !['id', 'race', 'class'].includes(key) ? Math.floor(val * multiplier) : val,
     ]),
   ) as Char);
 }
