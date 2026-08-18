@@ -125,7 +125,7 @@ export function useItem(player: Char, item: Item) {
     Object.entries(item).forEach(([iKey, iVal]) => {
       if (typeof iVal === 'number' && iKey.includes('Boost')) {
         Object.entries(player).forEach(([pKey, pVal]) => {
-          if (typeof pVal === 'number' && iKey.includes(pKey)) {
+          if (typeof pVal === 'number' && iKey.replace('Boost', '') === pKey) {
             console.log(`${pKey} +${iVal}`);
             (player[pKey as keyof Char] as number) = Math.max(0, (player[pKey as keyof Char] as number) + iVal);
           }

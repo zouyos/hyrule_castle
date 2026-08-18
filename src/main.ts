@@ -29,7 +29,10 @@ const players: Char[] = [...playersFromJson].map((player) => ({
   hpMax: player.hp,
   mpMax: player.mp,
   coins: 3,
-  inventory: [items[0], items[1]] as Item[],
+  inventory: [
+    {...items[0], equipped: true, quantity: 1}, 
+    {...items[1], equipped: true, quantity: 1}
+  ] as Item[],
   spells,
 }));
 
@@ -197,6 +200,8 @@ function game() {
 game();
 
 // TODO
-// quand on equipe un objet, perdre les stats de l'objet qu'il remplace (utiliser la propriété 'slot' de player)
-// bug: quand on perd un item usable (arrivé à 0) l'item disparaît mais reste référencé au choix d'entrée auquel il était associé
-// ajouter un système de recovery de mp pour rentabiliser l'option défense
+// - quand on equipe un objet, perdre les stats de l'objet qu'il remplace 
+// (utiliser la propriété 'slot' de player et equipped: false)
+// - bug: quand on perd un item usable (arrivé à 0) l'item disparaît de l'affichage
+// mais reste usable et référencé au choix d'entrée auquel il était associé
+// - ajouter un système de recovery de mp pour rentabiliser l'option défense

@@ -15,8 +15,8 @@
     "class":[],
     "rarity":0,
     "equipable": true,
-    "equipped": true,
-    "quantity": 1,
+    "equipped": false,
+    "quantity": 0,
     "slot": "weapon"
   },
   {
@@ -35,8 +35,8 @@
     "class":[],
     "rarity":0,
     "equipable": true,
-    "equipped": true,
-    "quantity": 1,
+    "equipped": false,
+    "quantity": 0,
     "slot": "shield"
   },
   {
