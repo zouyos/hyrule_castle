@@ -203,5 +203,6 @@ game();
 // - quand on equipe un objet, perdre les stats de l'objet qu'il remplace 
 // (utiliser la propriété 'slot' de player et equipped: false)
 // - bug: quand on perd un item usable (arrivé à 0) l'item disparaît de l'affichage
-// mais reste usable et référencé au choix d'entrée auquel il était associé
+// mais reste référencé au choix d'entrée auquel il était associé et se use à la place du
+// nouveau choix d'entrée
 // - ajouter un système de recovery de mp pour rentabiliser l'option défense
