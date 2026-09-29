@@ -152,15 +152,15 @@ function game() {
         break;
       case '2':
         nbFights = 20;
-        player.coins = 6
+        player.coins = 6;
         break;
       case '3':
         nbFights = 50;
-        player.coins = 15
+        player.coins = 15;
         break;
       case '4':
         nbFights = 100;
-        player.coins = 30
+        player.coins = 30;
         break;
       default:
         nbFights = 10;
@@ -206,4 +206,3 @@ game();
 // mais reste référencé au choix d'entrée auquel il était associé et se use à la place du
 // nouveau choix d'entrée
 // - ajouter un système de recovery de mp pour rentabiliser l'option defense
-// - pimper le jeu (gain de spells etc.)
