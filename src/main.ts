@@ -201,6 +201,3 @@ function game() {
 }
 
 game();
-
-// TODO
-// - ajouter un système de recovery de mp pour rentabiliser l'option defense

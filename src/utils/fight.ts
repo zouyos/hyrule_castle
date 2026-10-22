@@ -275,7 +275,7 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
       if (recovered > 0) {
         console.log(`\n\u001b[34mYou recover ${recovered} MP.\u001b[37m\n`);
       } else {
-        console.log('\u001b[34mYour MP are already at maximum.\u001b[37m\n');
+        console.log('Your MP are already at maximum.\n');
       }
     }
   }
