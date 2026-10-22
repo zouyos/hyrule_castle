@@ -83,57 +83,90 @@ export function displayInventory(inventory: Item[]): string {
   return itemChoice;
 }
 
+function applyItemBoosts(player: Char, item: Item, multiplier: 1 | -1) {
+  Object.entries(item).forEach(([key, value]) => {
+    if (key.endsWith('Boost') && typeof value === 'number') {
+      const stat = key.replace('Boost', '') as keyof Char;
+      const currentValue = player[stat];
+
+      if (typeof currentValue === 'number') {
+        (player[stat] as number) = Math.max(
+          0,
+          currentValue + value * multiplier,
+        );
+      }
+    }
+  });
+}
 
 export function useItem(player: Char, item: Item) {
   if (item.usable) {
-    const hpBoost: boolean = !!item.hpBoost && (item.hpBoost > 0);
-    if (hpBoost) {
-      if (player.hp === player.hpMax) {
-        console.log('\nYour HP are already at maximum.\n');
-        return false;
-      }
-    } else if (player.mp === player.mpMax) {
+    const hpBoost = !!item.hpBoost && item.hpBoost > 0;
+
+    if (hpBoost && player.hp === player.hpMax) {
+      console.log('\nYour HP are already at maximum.\n');
+      return false;
+    }
+
+    if (!hpBoost && player.mp === player.mpMax) {
       console.log('\nYour MP are already at maximum.\n');
       return false;
     }
-    const baseBoost: number = item.hpBoost && item.hpBoost > 0 ? item.hpBoost : item.mpBoost ?? 0;
+
+    const baseBoost = hpBoost ? item.hpBoost! : item.mpBoost ?? 0;
+
     console.log(`\nYou use a ${item.name}.`);
+
     if (hpBoost) {
-      if (player.hp + baseBoost <= player.hpMax) {
-        player.hp += baseBoost;
-        item.quantity -= 1
-        console.log(`\n\u001b[36mYou recover ${baseBoost} HP.\u001b[37m\n`);
-      } else {
-        console.log(`\n\u001b[36mYou recover ${player.hpMax - player.hp} HP.\u001b[37m\n`);
-        player.hp = player.hpMax;
-        item.quantity -= 1
-      }
-    } else if (player.mp + baseBoost <= player.mpMax) {
-      player.mp += baseBoost;
-      item.quantity -= 1
-      console.log(`\n\u001b[34mYou recover ${baseBoost} MP.\u001b[37m\n`);
+      const recovered = Math.min(baseBoost, player.hpMax - player.hp);
+      player.hp += recovered;
+      console.log(`\n\u001b[36mYou recover ${recovered} HP.\u001b[37m\n`);
     } else {
-      console.log(`\n\u001b[34mYou recover ${player.mpMax - player.mp} MP.\u001b[37m\n`);
-      player.mp = player.mpMax;
-      item.quantity -= 1
+      const recovered = Math.min(baseBoost, player.mpMax - player.mp);
+      player.mp += recovered;
+      console.log(`\n\u001b[34mYou recover ${recovered} MP.\u001b[37m\n`);
     }
+
+    item.quantity -= 1;
   }
 
   if (item.equipable) {
-    console.log();
-    console.log(`${item.name} equipped\n`);
-    Object.entries(item).forEach(([iKey, iVal]) => {
-      if (typeof iVal === 'number' && iKey.includes('Boost')) {
-        Object.entries(player).forEach(([pKey, pVal]) => {
-          if (typeof pVal === 'number' && iKey.replace('Boost', '') === pKey) {
-            console.log(`${pKey} +${iVal}`);
-            (player[pKey as keyof Char] as number) = Math.max(0, (player[pKey as keyof Char] as number) + iVal);
-          }
-        });
+    if (item.equipped) {
+      console.log(`\n${item.name} is already equipped.\n`);
+      return false;
+    }
+
+    const previousItem = player.inventory?.find(
+      (inventoryItem) =>
+        inventoryItem.equipped &&
+        inventoryItem.slot === item.slot &&
+        inventoryItem !== item,
+    );
+
+    if (previousItem) {
+      applyItemBoosts(player, previousItem, -1);
+      previousItem.equipped = false;
+    }
+
+    applyItemBoosts(player, item, 1);
+    item.equipped = true;
+
+    player.hp = Math.min(player.hp, player.hpMax);
+    player.mp = Math.min(player.mp, player.mpMax);
+
+    console.log(`\n${item.name} equipped\n`);
+
+    Object.entries(item).forEach(([key, value]) => {
+      if (key.endsWith('Boost') && typeof value === 'number' && value !== 0) {
+        console.log(
+          `${key.replace('Boost', '')} ${value > 0 ? '+' : ''}${value}`,
+        );
       }
     });
+
     console.log();
   }
+  return true
 }
 
 export function displaySpells(player: Char, spells: Spell[]): string {
@@ -237,6 +270,13 @@ export function enemyTurn(player: Char, enemy: Char, protect: boolean) {
     } else {
       player.hp -= Math.floor(calcEnemyDamage / 2);
       console.log(`You lose ${Math.floor(calcEnemyDamage / 2)} HP.\n`);
+      const recovered = Math.min(5, player.mpMax - player.mp);
+      player.mp += recovered;
+      if (recovered > 0) {
+        console.log(`\n\u001b[34mYou recover ${recovered} MP.\u001b[37m\n`);
+      } else {
+        console.log('\u001b[34mYour MP are already at maximum.\u001b[37m\n');
+      }
     }
   }
 }

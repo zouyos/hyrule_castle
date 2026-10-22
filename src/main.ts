@@ -72,14 +72,17 @@ function fight(player: Char, enemy: Char) {
     } else if (move === '1') {
       playerTurn(player, enemy);
     } else if (move === '3' && player.inventory) {
+      const availableItems = player.inventory.filter(
+        (item) => item.quantity > 0,
+      );
       const itemChoice = displayInventory(player.inventory);
       if (itemChoice === '0') {
         console.log();
         continue;
       }
-      const item = player.inventory?.[Number(itemChoice) - 1];
-      if (player.inventory && item) {
-        useItem(player, item);
+      const item = availableItems[Number(itemChoice) - 1];
+      if (item && !useItem(player, item)) {
+        continue;
       }
     } else if (move === '4') {
       const spellChoice = displaySpells(player, spells);
@@ -200,9 +203,4 @@ function game() {
 game();
 
 // TODO
-// - quand on equipe un objet, perdre les stats de l'objet qu'il remplace 
-// (utiliser la propriété 'slot' de player et equipped: false)
-// - bug: quand on perd un item usable (arrivé à 0) l'item disparaît de l'affichage
-// mais reste référencé au choix d'entrée auquel il était associé et se use à la place du
-// nouveau choix d'entrée
 // - ajouter un système de recovery de mp pour rentabiliser l'option defense
